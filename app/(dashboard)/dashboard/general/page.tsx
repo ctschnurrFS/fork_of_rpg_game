@@ -50,14 +50,16 @@ export default function GeneralPage() {
 
   const handleClassSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (!user?.id || !selectedClass || selectedClass === user.class) return;
 
     setIsClassPending(true);
     setClassState({ error: "", success: "" });
 
     try {
-      // Use fetch API to call a route handler instead of direct DB access
-      const response = await fetch("/api/update-class", {
+      // Update this line to use the correct endpoint:
+      const response = await fetch("/api/users/update-class", {
+        // Changed from /api/update-class
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,19 +70,28 @@ export default function GeneralPage() {
         }),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (result.success) {
-        setClassState({ success: result.success, error: "" });
-        if (user) user.class = selectedClass;
-      } else {
-        setClassState({
-          error: result.error || "Failed to update class",
-          success: "",
-        });
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to update character class");
+      }
+
+      setClassState({
+        success: data.success || "Character class updated successfully",
+        error: "",
+      });
+
+      // Update local user state
+      if (user) {
+        user.class = selectedClass;
       }
     } catch (error) {
-      setClassState({ error: "An unexpected error occurred", success: "" });
+      console.error("Update class error:", error);
+      setClassState({
+        error:
+          error instanceof Error ? error.message : "Failed to update class",
+        success: "",
+      });
     } finally {
       setIsClassPending(false);
     }
