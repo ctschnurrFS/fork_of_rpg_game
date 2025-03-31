@@ -3,6 +3,8 @@ import { stripe } from "@/lib/payments/stripe"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTeamForUser, getUser } from '@/lib/db/queries';
+import { NextResponse } from "next/server";
+
 
 export default async function Success({ searchParams }: { searchParams: { session_id?: string } }) {
 

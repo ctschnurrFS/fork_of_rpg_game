@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  numeric
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -29,6 +30,16 @@ export const teams = pgTable('teams', {
   stripeProductId: text('stripe_product_id'),
   planName: varchar('plan_name', { length: 50 }),
   subscriptionStatus: varchar('subscription_status', { length: 20 }),
+});
+
+export const userPurchases = pgTable("user_purchase", {
+  userPurchaseId: serial("user_purchase_id").primaryKey(),
+  userId: integer("user_id"),
+  itemName: varchar("item_name", { length: 500 }),
+  price: numeric("price", { precision: 5, scale: 2 }),
+  purchaseDate: timestamp("purchase_date").defaultNow(),
+  quantity: integer("quantity"),
+  userName: varchar("user_name", { length: 100 }),
 });
 
 export const teamMembers = pgTable('team_members', {
