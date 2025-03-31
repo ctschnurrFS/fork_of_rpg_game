@@ -5,6 +5,8 @@ import { db } from './drizzle';
 import { activityLogs, teamMembers, teams, users } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
+import { userPurchases } from "@/lib/db/schema"; // Import  userPurchases schema
+import { InsertUserPurchase } from "@/lib/db/schema"; // Import the type
 
 export async function getUser() {
   const sessionCookie = (await cookies()).get('session');

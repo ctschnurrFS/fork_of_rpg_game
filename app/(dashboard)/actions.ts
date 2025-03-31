@@ -19,6 +19,7 @@ export const handleUserInput = async (playerAction: any, queryGemini: Function) 
             </ul>
             <ul class="w-[10%] flex-row">
               <li> - CLEAR</li>
+              <li> - ASK</li>
             </ul>
           </div>`
         break;
@@ -27,6 +28,9 @@ export const handleUserInput = async (playerAction: any, queryGemini: Function) 
         break;
       case 'walk':
         output = `Where would you like to go?`
+        break;
+      case 'ask':
+        output = `What would you like to ask?`
         break;
     }
   }
@@ -58,7 +62,7 @@ export const handleUserInput = async (playerAction: any, queryGemini: Function) 
   let gameTerminal = document.getElementById("gameTerminal");
   if (!gameTerminal) return;
 
-  return (    
+  return (
     `<div>» ${output} </div><br>`
   )
 }

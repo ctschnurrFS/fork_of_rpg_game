@@ -42,6 +42,10 @@ export const userPurchases = pgTable("user_purchase", {
   userName: varchar("user_name", { length: 100 }),
 });
 
+// Optional types for user_purchase
+export type UserPurchase = typeof userPurchases.$inferSelect;
+export type InsertUserPurchase = typeof userPurchases.$inferInsert;
+
 export const teamMembers = pgTable('team_members', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')
