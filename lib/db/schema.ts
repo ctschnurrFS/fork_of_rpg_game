@@ -5,14 +5,19 @@ import {
   text,
   timestamp,
   integer,
+  uuid,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+// Main users table (updated for NextAuth compatibility)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
+  emailVerified: timestamp("email_verified"),
+  passwordHash: text("password_hash"),
+  image: text("image"),
   role: varchar("role", {
     length: 20,
     enum: ["owner", "admin", "regular"],
@@ -36,6 +41,54 @@ export const users = pgTable("users", {
   }),
 });
 
+// New tables required for NextAuth
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: varchar("type", { length: 255 }).notNull(),
+    provider: varchar("provider", { length: 255 }).notNull(),
+    providerAccountId: varchar("provider_account_id", {
+      length: 255,
+    }).notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: varchar("token_type", { length: 255 }),
+    scope: varchar("scope", { length: 255 }),
+    id_token: text("id_token"),
+    session_state: varchar("session_state", { length: 255 }),
+  },
+  (table) => ({
+    compoundKey: unique().on(table.provider, table.providerAccountId),
+  })
+);
+
+export const sessions = pgTable("sessions", {
+  id: serial("id").primaryKey(),
+  sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires").notNull(),
+});
+
+export const verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull().unique(),
+    expires: timestamp("expires").notNull(),
+  },
+  (table) => ({
+    compoundKey: unique().on(table.identifier, table.token),
+  })
+);
+
+// Your existing tables remain unchanged
 export const teams = pgTable("teams", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
@@ -85,16 +138,33 @@ export const invitations = pgTable("invitations", {
   status: varchar("status", { length: 20 }).notNull().default("pending"),
 });
 
-// Relations (unchanged)
+// Updated relations to include new tables
+export const usersRelations = relations(users, ({ many }) => ({
+  teamMembers: many(teamMembers),
+  invitationsSent: many(invitations),
+  accounts: many(accounts),
+  sessions: many(sessions),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+// Your existing relations remain unchanged
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
   activityLogs: many(activityLogs),
   invitations: many(invitations),
-}));
-
-export const usersRelations = relations(users, ({ many }) => ({
-  teamMembers: many(teamMembers),
-  invitationsSent: many(invitations),
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
@@ -152,10 +222,13 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
+export type Account = typeof accounts.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type VerificationToken = typeof verificationTokens.$inferSelect;
 
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
-    user: Pick<User, "id" | "name" | "email">;
+    user: Pick<User, "id" | "name" | "email" | "image">;
   })[];
 };
 
@@ -170,4 +243,5 @@ export enum ActivityType {
   REMOVE_TEAM_MEMBER = "REMOVE_TEAM_MEMBER",
   INVITE_TEAM_MEMBER = "INVITE_TEAM_MEMBER",
   ACCEPT_INVITATION = "ACCEPT_INVITATION",
+  OAUTH_SIGN_IN = "OAUTH_SIGN_IN",
 }
