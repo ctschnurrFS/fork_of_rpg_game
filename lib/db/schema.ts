@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -17,6 +18,15 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
   deletedAt: timestamp('deleted_at'),
+  location_id: text('location_id')
+  .notNull()
+  .references(() => game_locations.location_id)
+});
+
+export const game_locations = pgTable('game_locations', {
+  location_id: text('location_id').primaryKey(),
+  description: text('description').notNull(),
+  doors: jsonb('doors').default('{}'),
 });
 
 export const teams = pgTable('teams', {

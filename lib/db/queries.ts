@@ -2,7 +2,7 @@
 
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
+import { activityLogs, teamMembers, teams, users, game_locations } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -78,6 +78,24 @@ export async function getUserWithTeam(userId: number) {
     .limit(1);
 
   return result[0];
+}
+
+export async function getLocationData(location_id: string) {
+  const result = await db
+    .select()
+    .from(game_locations)
+    .where(eq(game_locations.location_id, location_id))
+    .limit(1);
+
+  return result[0];
+}
+
+export async function setUserLocation(userId: number, newLocation: string) {
+  const result = await db.update(users)
+    .set({ location_id: newLocation })
+    .where(eq(users.id, userId));
+
+  return result
 }
 
 export async function getActivityLogs() {

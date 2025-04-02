@@ -43,6 +43,7 @@ async function seed() {
   const email = 'test@test.com';
   const password = 'admin123';
   const passwordHash = await hashPassword(password);
+  const location_id = 'castle_courtyard'
 
   const [user] = await db
     .insert(users)
@@ -51,6 +52,7 @@ async function seed() {
         email: email,
         passwordHash: passwordHash,
         role: "owner",
+        location_id: location_id,
       },
     ])
     .returning();

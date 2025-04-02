@@ -3,31 +3,17 @@
 import { useState, useEffect } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { handleUserInput } from './actions';
+import { setupActions, handleUserInput } from './actions';
 
 export function Terminal(props: { player: any; }) {
   const user=props.player
   const TERMINAL_MAX = 100000;
 
-  // const [terminalStep, setTerminalStep] = useState(0);
-  // const terminalSteps = [
-  //   'Brian Delaney',
-  //   'Paul McIsaac',
-  //   'Christopher Schnurr',
-  //   'Badass RPG Game Developers',
-  // ];
+  useEffect(() => {
+    setupActions(user);
+  }, []);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setTerminalStep((prev) =>
-  //       prev < terminalSteps.length - 1 ? prev + 1 : prev
-  //     );
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // }, [terminalStep]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
     event.preventDefault();
 
@@ -43,13 +29,7 @@ export function Terminal(props: { player: any; }) {
     let gameTerminal = document.getElementById("gameTerminal");
     if(!gameTerminal) return;
 
-    let playerAction = {
-      name: user?.name,
-      input: playerInput
-    }
-
-    gameTerminal.innerHTML += handleUserInput(playerAction);
-    gameTerminal.scrollTop = gameTerminal.scrollHeight;
+    const output = await handleUserInput(playerInput);
 
     if (gameTerminal.innerHTML.length > TERMINAL_MAX){
       if(gameTerminal.firstChild) gameTerminal.firstChild.remove();
@@ -60,7 +40,7 @@ export function Terminal(props: { player: any; }) {
     let gameTerminal = document.getElementById("gameTerminal");
     if(!gameTerminal) return;
 
-    gameTerminal.innerHTML = "<div>» Game Window Cleared «</div>"
+    gameTerminal.innerHTML = "<div>» Game Window Cleared «</div><br>"
   }
 
   return (
@@ -72,16 +52,7 @@ export function Terminal(props: { player: any; }) {
               Game Terminal:
             </div>
           </div>
-          <div id="gameTerminal" className="h-[90%] space-y-2 overflow-y-scroll">
-            {/* {terminalSteps.map((step, index) => (
-              <div
-                key={index}
-                className={`${index > terminalStep ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-              >
-                <span className="text-green-400">:</span> {step}
-              </div>
-            ))} */}
-          </div>
+          <div id="gameTerminal" className="h-[90%] space-y-2 overflow-y-scroll"></div>
         </div>
       </div>
       <div className="w-full h-auto my-2 rounded-lg shadow-lg overflow-hidden bg-gray-900 text-white font-mono text-sm">
