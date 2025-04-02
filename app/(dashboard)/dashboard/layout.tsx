@@ -19,7 +19,8 @@ export default function DashboardLayout({
     { href: '/dashboard/general', icon: Settings, label: 'General' },
     { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
     { href: '/dashboard/security', icon: Shield, label: 'Security' },
-    { href: '/dashboard/purchase', icon: DollarSign, label: 'Purchase NEW' },    
+    { href: '/dashboard/purchase', icon: DollarSign, label: 'Purchase Item' },    
+    { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'Purchase List' }, 
   ];
 
   return (

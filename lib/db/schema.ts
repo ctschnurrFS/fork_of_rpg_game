@@ -32,19 +32,18 @@ export const teams = pgTable('teams', {
   subscriptionStatus: varchar('subscription_status', { length: 20 }),
 });
 
-export const userPurchases = pgTable("user_purchase", {
-  userPurchaseId: serial("user_purchase_id").primaryKey(),
-  userId: integer("user_id"),
-  itemName: varchar("item_name", { length: 500 }),
-  price: numeric("price", { precision: 5, scale: 2 }),
-  purchaseDate: timestamp("purchase_date").defaultNow(),
-  quantity: integer("quantity"),
-  userName: varchar("user_name", { length: 100 }),
+export const userPurchasesTable = pgTable('user_purchase', {
+  userPurchaseId: serial('user_purchase_id').primaryKey(),
+  userId: integer('user_id').notNull(),
+  itemName: varchar('item_name', { length: 100 }).notNull(),
+  price: numeric('price', { precision: 5, scale: 2 }).notNull(),
+  purchaseDate: timestamp('purchase_date').defaultNow(),
+  quantity: integer('quantity').notNull(),
+  userName: varchar('user_name', { length: 100 }).notNull(),
 });
 
-// Optional types for user_purchase
-export type UserPurchase = typeof userPurchases.$inferSelect;
-export type InsertUserPurchase = typeof userPurchases.$inferInsert;
+// export type UserPurchase = typeof userPurchases.$inferSelect;
+// export type NewUserPurchase = typeof userPurchases.$inferInsert;
 
 export const teamMembers = pgTable('team_members', {
   id: serial('id').primaryKey(),

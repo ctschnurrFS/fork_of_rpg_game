@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { stripe } from "@/lib/payments/stripe"
-import { Button } from '@/components/ui/button'
+import { db } from '@/lib/db/drizzle'
+import { userPurchasesTable } from '@/lib/db/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTeamForUser, getUser } from '@/lib/db/queries';
 import { NextResponse } from "next/server";
@@ -34,6 +35,31 @@ export default async function Success({ searchParams }: { searchParams: { sessio
   }
 
   if (status === 'complete') {
+
+  //   await db.insert(userPurchasesTable).values({
+  //     userId: '1', // Convert userId to string
+  //     itemName: 'Test Item',
+  //     price: 10.00,
+  //     quantity: 1,
+  //     userName: 'Test User',
+  // });
+
+    // insert a record of the purchase in the user_purchase table
+
+    const userIdPurchase = user?.id;
+    const firstLineItem = line_items?.data[0];
+    const price =  ((firstLineItem?.amount_total ?? 0) / 100).toFixed(2);
+    
+    const insertedPurchase = await db.insert(userPurchasesTable).values({
+      userId: userIdPurchase,
+      itemName: firstLineItem?.description,
+      price: price,
+      quantity: firstLineItem?.quantity,
+      userName: user?.name,
+    }).returning();
+
+    //////////////////////////////////////////////////////////////
+
     return (
       <section id="success">
 

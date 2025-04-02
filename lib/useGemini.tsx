@@ -9,14 +9,14 @@ export function useGemini() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [prompt, setPrompt] = useState<string | null>(null);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    //const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     const queryGemini = async (message: string): Promise<string> => {
     //const queryGemini = async (message: string): Promise<{ html: string; imageUrl: string | null }> => {
 
         setLoading(true);
         setError(null);
-        setImageUrl(null);
+        //setImageUrl(null);
         setPrompt(message);
         const originalMessage = message;
 
@@ -40,22 +40,17 @@ export function useGemini() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt: originalMessage }),
             });
-
-            const data = await responseImage.json();
-            //if (!responseImage.ok) throw new Error(data.error || "Failed to generate image");
-
-            //console.log("Image URL:", data.imageUrl);
-            setImageUrl(data.imageUrl); // Save image URL in state
-            setLoading(false);
            
             // let imageHTML;
             let returnHtml = "<div style = 'display: flex; align-items: center; gap: 20px;' ><div style='max-width: 900px; font-size: 14px;'>"
-            returnHtml += "<p>" + response.text + "</p>" + "</div>";
+            returnHtml += "<p>" + response.text + "</p>" + "</div>";            
 
-            if (responseImage.ok) {
-                returnHtml +=  `<img src='${data.imageUrl}' alt='Generated'  style='height: 450px; width: auto; border: 3px solid #5a3e1b; padding: 5px;background-color: #f5f1e8;box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);filter: contrast(90%) brightness(90%);border-radius: 8px;' />`;             
-                //returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='height: 450px; width: auto; border: 3px solid #5a3e1b; padding: 5px;background-color: #f5f1e8;box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);filter: contrast(90%) brightness(90%);border-radius: 8px;' />`;             
-                //console.log("imageUrl: " + imageUrl);
+            if (responseImage) {
+
+                const blob = await responseImage.blob();
+                const imageUrl = URL.createObjectURL(blob);
+
+                returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='height: 375px; width: auto; border: 3px solid #5a3e1b; padding: 5px;background-color: #f5f1e8;box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);filter: contrast(90%) brightness(90%);border-radius: 8px;' />`;             
             } else {
                 console.log("Failed to generate image");
             }       
