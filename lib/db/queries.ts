@@ -1,41 +1,44 @@
 "use server";
 
-import { desc, and, eq, isNull } from 'drizzle-orm';
-import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
+import { desc, and, eq, isNull } from "drizzle-orm";
+import { db } from "./drizzle";
+import { activityLogs, teamMembers, teams, users } from "./schema";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/session";
 
 export async function getUser() {
-  const sessionCookie = (await cookies()).get('session');
-  if (!sessionCookie || !sessionCookie.value) {
+  try {
+    // Properly await cookies() in Server Actions
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("session");
+
+    if (!sessionCookie?.value) {
+      return null;
+    }
+
+    const sessionData = await verifyToken(sessionCookie.value);
+
+    if (!sessionData?.user?.id) {
+      return null;
+    }
+
+    // Check session expiration
+    if (sessionData.expires && new Date(sessionData.expires) < new Date()) {
+      return null;
+    }
+
+    // Fetch user from database
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
+      .limit(1);
+
+    return user || null;
+  } catch (error) {
+    // Return null on any error to fail gracefully
     return null;
   }
-
-  const sessionData = await verifyToken(sessionCookie.value);
-  if (
-    !sessionData ||
-    !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
-  ) {
-    return null;
-  }
-
-  if (new Date(sessionData.expires) < new Date()) {
-    return null;
-  }
-
-  const user = await db
-    .select()
-    .from(users)
-    .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
-    .limit(1);
-
-  if (user.length === 0) {
-    return null;
-  }
-
-  return user[0];
 }
 
 export async function getTeamByStripeCustomerId(customerId: string) {
@@ -83,7 +86,7 @@ export async function getUserWithTeam(userId: number) {
 export async function getActivityLogs() {
   const user = await getUser();
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   return await db
