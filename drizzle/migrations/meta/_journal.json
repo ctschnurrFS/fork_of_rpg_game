@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1743533408701,
+      "tag": "0000_true_joshua_kane",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1743534807456,
+      "tag": "0001_same_polaris",
+      "breakpoints": true
+    }
+  ]
+}
