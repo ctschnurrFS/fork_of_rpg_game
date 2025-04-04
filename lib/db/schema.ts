@@ -6,7 +6,6 @@ import {
   timestamp,
   integer,
   numeric,
-  uuid,
   unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
