@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTeamForUser, getUser } from '@/lib/db/queries';
 import { NextResponse } from "next/server";
 
-
 export default async function Success({ searchParams }: { searchParams: { session_id?: string } }) {
 
   const user = await getUser();
@@ -14,7 +13,6 @@ export default async function Success({ searchParams }: { searchParams: { sessio
 
   if (!session_id)
     throw new Error('Please provide a valid session_id (`cs_test_...`)')
-
 
   const {
     status

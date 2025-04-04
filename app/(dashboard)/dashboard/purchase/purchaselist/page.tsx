@@ -2,6 +2,8 @@ import { db } from '@/lib/db/drizzle'
 import { userPurchasesTable } from '@/lib/db/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { desc } from 'drizzle-orm';
+import GeminiComponent from "@/components/gemini-text-image";
+import { Gem } from 'lucide-react';
 
 export default async function purchaselist() {
 
@@ -16,6 +18,9 @@ export default async function purchaselist() {
 
         <section className="flex-1 p-4 lg:p-8">
             <Card className="mb-8">
+
+                <GeminiComponent/>
+
                 <CardHeader>
                     <CardTitle>User Purchases</CardTitle>
                 </CardHeader>

@@ -30,8 +30,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
-    "drizzle-kit": "^0.30.6",
-    "drizzle-orm": "^0.38.4",
+    "drizzle-orm": "^0.39.1",
     "form-data": "^4.0.2",
     "jose": "^5.9.6",
     "lucide-react": "^0.474.0",
@@ -51,6 +50,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1"
+    "@types/node": "^22.13.1",
+    "drizzle-kit": "^0.30.4"
   }
 }
