@@ -17,7 +17,6 @@ export async function getUser() {
     }
 
     const sessionData = await verifyToken(sessionCookie.value);
-
     if (!sessionData?.user?.id) {
       return null;
     }

@@ -1,5 +1,7 @@
-// app/(dashboard)/actions.ts
-export const handleUserInput = (playerAction: any) => {
+export const handleUserInput = async (
+  playerAction: any,
+  queryGemini: Function
+) => {
   let username = playerAction.name;
   let input = playerAction.input;
 
@@ -20,6 +22,7 @@ export const handleUserInput = (playerAction: any) => {
             </ul>
             <ul class="w-[10%] flex-row">
               <li> - CLEAR</li>
+              <li> - ASK</li>
             </ul>
           </div>`;
         break;
