@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  numeric
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -30,6 +31,19 @@ export const teams = pgTable('teams', {
   planName: varchar('plan_name', { length: 50 }),
   subscriptionStatus: varchar('subscription_status', { length: 20 }),
 });
+
+export const userPurchasesTable = pgTable('user_purchase', {
+  userPurchaseId: serial('user_purchase_id').primaryKey(),
+  userId: integer('user_id').notNull(),
+  itemName: varchar('item_name', { length: 100 }).notNull(),
+  price: numeric('price', { precision: 5, scale: 2 }).notNull(),
+  purchaseDate: timestamp('purchase_date').defaultNow(),
+  quantity: integer('quantity').notNull(),
+  userName: varchar('user_name', { length: 100 }).notNull(),
+});
+
+// export type UserPurchase = typeof userPurchases.$inferSelect;
+// export type NewUserPurchase = typeof userPurchases.$inferInsert;
 
 export const teamMembers = pgTable('team_members', {
   id: serial('id').primaryKey(),
