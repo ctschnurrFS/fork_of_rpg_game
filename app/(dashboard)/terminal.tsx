@@ -33,9 +33,8 @@ export function Terminal(props: { player: any; }) {
 
     try {
       // Wait for the result from handleUserInput
-      const result = await handleUserInput(playerInput, queryGemini);
+      await handleUserInput(playerInput, queryGemini);
 
-      gameTerminal.innerHTML += result;
       gameTerminal.scrollTop = gameTerminal.scrollHeight;
 
       if (gameTerminal.innerHTML.length > TERMINAL_MAX) {

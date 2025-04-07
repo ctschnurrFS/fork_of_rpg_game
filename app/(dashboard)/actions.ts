@@ -1,3 +1,4 @@
+
 import responses from './responses.json';
 import { getLocationData, setUserLocation } from '@/lib/db/queries';
 
@@ -91,46 +92,47 @@ export const handleUserInput = async (
     let first_string = split_input_array.shift().toLowerCase()
     let rest_of_input = split_input_array.join(" ")
 
-    if(splitInput.length == 0){
-      switch(firstWord) {
+    if(split_input_array.length == 0){
+      switch(first_string) {
         case '?':
-          output = `<span class="font-bold">HELP:</span>
-          <p>Try These Commands:</p>
-          <div class="flex">
-            <ul class="w-[10%] flex-row">
-              <li> - SAY</li>
-              <li> - WALK</li>
-            </ul>
-            <ul class="w-[10%] flex-row">
-              <li> - CLEAR</li>
-            </ul>
-          </div>`
+            outputToTerminal(responses.help)
           break;
         case 'say':
-          output = `What would you like to say?`
+            outputToTerminal(`What would you like to say?`)
           break;
         case 'walk':
-          output = `Where would you like to go?`
+            outputToTerminal(`Where would you like to go?`)
+          break;
+        case 'look':
+            outputToTerminal(`You look around.`)
+            handleLook()
+          break;
+        case 'ask':
+            outputToTerminal(`What would you like to ask?`)
+          break;
+        default:
+          outputToTerminal('')
+          break;
+      }
+    } else {
+      switch(first_string) {
+        case 'say':
+            outputToTerminal(`<span class="text-blue-300"> ${ current_player.name } </span> Says: "${ rest_of_input }"`)
+          break;
+        case 'walk':
+            let direction_string = split_input_array[0].toLowerCase()
+            handleWalk(direction_string)
+          break;
+        case "ask": // This triggers the Gemini query
+            outputToTerminal("Getting a response from Gemini AI...");
+            try {
+              const geminiResponse = await queryGemini(rest_of_input); // Query Gemini AI
+              console.log("geminiResponse: ", geminiResponse);
+              outputToTerminal(`<span class="font-bold">You asked:</span> ${rest_of_input} <br><span class="font-bold">Answer:</span>   ${geminiResponse} `)
+            } catch (err) {
+              outputToTerminal(`Error: ${ err instanceof Error ? err.message : "An unknown error occurred" }`);
+            }
           break;
       }
     }
-    else{
-      switch(firstWord) {
-        case 'say':
-          output = `<span class="text-blue-300"> ${ username } </span> Says: "${ inputRemainder }"`
-          break;
-        case 'walk':
-          output = `You can't walk there.`
-          break;
-      }
-    }
-
-    if(output == '') output = `I don't understand that command. Please enter '?' for help.`
-
-    let gameTerminal = document.getElementById("gameTerminal");
-    if(!gameTerminal) return;
-
-    return (
-      `<div>» ${ output } </div><br>`
-    )
   }
