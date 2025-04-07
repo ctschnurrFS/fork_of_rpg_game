@@ -1,9 +1,9 @@
 "use client";
-import { callGemini } from "@/lib/callGemini";
+import { useCallGemini } from "@/lib/useCallGemini";
 import { useState } from "react";
 
 export default function GeminiComponent() {
-    const { queryGemini, responseText, imageUrl, loading, error } = callGemini();
+    const { queryGemini, responseText, imageUrl, loading, error } = useCallGemini();
     const [input, setInput] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -101,7 +101,7 @@ export default async function IndexPage({ searchParams }: { searchParams: { canc
                 {/* Product Image */}
                 <img
                   src="/images/horse.png"
-                  alt="Horse"
+                  alt="Horse and Armour"
                   className="w-24 h-24 object-cover mr-4 rounded-md"
                 />
 

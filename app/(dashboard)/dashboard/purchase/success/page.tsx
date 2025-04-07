@@ -34,19 +34,37 @@ export default async function Success({ searchParams }: { searchParams: { sessio
 
   if (status === 'complete') {
 
-  //   await db.insert(userPurchasesTable).values({
-  //     userId: '1', // Convert userId to string
-  //     itemName: 'Test Item',
-  //     price: 10.00,
-  //     quantity: 1,
-  //     userName: 'Test User',
-  // });
-
-    // insert a record of the purchase in the user_purchase table
-
     const userIdPurchase = user?.id;
     const firstLineItem = line_items?.data[0];
     const price =  ((firstLineItem?.amount_total ?? 0) / 100).toFixed(2);
+
+    let itemImageLink;
+    switch (firstLineItem?.description) {
+      case "Hammer":
+        itemImageLink = "/images/hammer.png";
+        break; 
+    
+        case "Horse and Armour":
+          itemImageLink = "/images/horse.png";
+        break;
+
+        case "Suit of Armour":
+          itemImageLink = "/images/armour.jpg";
+        break;
+
+        case "F-15 Eagle":
+          itemImageLink = "/images/f-15.jpg";
+        break;   
+        
+        case "Whisky Barrel":
+          itemImageLink = "/images/brandycask.png";
+        break;
+    
+      // ... potentially more cases
+    
+      default: 
+        itemImageLink = "/images/hammer.png";
+    }    
     
     const insertedPurchase = await db.insert(userPurchasesTable).values({
       userId: userIdPurchase,
@@ -54,6 +72,7 @@ export default async function Success({ searchParams }: { searchParams: { sessio
       price: price,
       quantity: firstLineItem?.quantity,
       userName: user?.name,
+      itemImageLink: itemImageLink,
     }).returning();
 
     //////////////////////////////////////////////////////////////

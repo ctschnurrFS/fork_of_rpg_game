@@ -1,6 +1,6 @@
 "use client";
 
-import { callGemini } from "@/lib/callGemini";
+import { useCallGemini } from "@/lib/useCallGemini";
 import { useEffect } from "react"; // Import useEffect
 
 // Define the props for the component
@@ -11,7 +11,7 @@ interface GeminiComponentProps {
 // Update the component to accept props
 export default function GeminiComponent({ promptText }: GeminiComponentProps) {
     // useGemini hook remains the same
-    const { queryGemini, responseText, imageUrl, loading, error } = callGemini();
+    const { queryGemini, responseText, imageUrl, loading, error } = useCallGemini();
 
     // Use useEffect to call queryGemini when the promptText prop changes
     useEffect(() => {

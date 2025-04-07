@@ -22,8 +22,8 @@ export async function POST(req: Request) {
 
     // Generate the image using Google Gemini AI
     const response = await ai.models.generateContent({
-      //model: "gemini-2.0-flash-exp-image-generation",
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.0-flash-exp-image-generation",
+      //model: "gemini-2.0-flash-exp",
       contents: contentImage,
       config: {
         responseModalities: ["Text", "Image"],

@@ -117,6 +117,7 @@ export const userPurchasesTable = pgTable("user_purchase", {
   purchaseDate: timestamp("purchase_date").defaultNow(),
   quantity: integer("quantity").notNull(),
   userName: varchar("user_name", { length: 100 }).notNull(),
+  itemImageLink: varchar("item_image_link", { length: 100 }).notNull(),
 });
 
 // export type UserPurchase = typeof userPurchases.$inferSelect;
