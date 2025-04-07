@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { handleUserInput } from './actions';
+import { setupActions, handleUserInput } from './actions';
 import { useGemini } from "@/lib/useGemini";
 
 export function Terminal(props: { player: any; }) {
@@ -11,23 +11,9 @@ export function Terminal(props: { player: any; }) {
   const TERMINAL_MAX = 100000;
   const { queryGemini } = useGemini();
 
-  // const [terminalStep, setTerminalStep] = useState(0);
-  // const terminalSteps = [
-  //   'Brian Delaney',
-  //   'Paul McIsaac',
-  //   'Christopher Schnurr',
-  //   'Badass RPG Game Developers',
-  // ];
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setTerminalStep((prev) =>
-  //       prev < terminalSteps.length - 1 ? prev + 1 : prev
-  //     );
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // }, [terminalStep]);
+  useEffect(() => {
+    setupActions(user);
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
@@ -45,16 +31,10 @@ export function Terminal(props: { player: any; }) {
     let gameTerminal = document.getElementById("gameTerminal");
     if (!gameTerminal) return;
 
-    let playerAction = {
-      name: user?.name,
-      input: playerInput
-    }
-
     try {
       // Wait for the result from handleUserInput
-      const result = await handleUserInput(playerAction, queryGemini);
+      await handleUserInput(playerInput, queryGemini);
 
-      gameTerminal.innerHTML += result;
       gameTerminal.scrollTop = gameTerminal.scrollHeight;
 
       if (gameTerminal.innerHTML.length > TERMINAL_MAX) {
@@ -70,7 +50,7 @@ export function Terminal(props: { player: any; }) {
     let gameTerminal = document.getElementById("gameTerminal");
     if (!gameTerminal) return;
 
-    gameTerminal.innerHTML = "<div>» Game Window Cleared «</div>"
+    gameTerminal.innerHTML = "<div>» Game Window Cleared «</div><br>"
   }
 
   return (
@@ -82,16 +62,7 @@ export function Terminal(props: { player: any; }) {
               Game Terminal:
             </div>
           </div>
-          <div id="gameTerminal" className="h-[90%] space-y-2 overflow-y-scroll">
-            {/* {terminalSteps.map((step, index) => (
-              <div
-                key={index}
-                className={`${index > terminalStep ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-              >
-                <span className="text-green-400">:</span> {step}
-              </div>
-            ))} */}
-          </div>
+          <div id="gameTerminal" className="h-[90%] space-y-2 overflow-y-scroll"></div>
         </div>
       </div>
       <div className="w-full h-auto my-2 rounded-lg shadow-lg overflow-hidden bg-gray-900 text-white font-mono text-sm">
