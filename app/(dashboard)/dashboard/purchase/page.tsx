@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function IndexPage({ searchParams }: { searchParams: { canceled?: boolean, noselection?: boolean } }) {
 
-  const { canceled, noselection } = await searchParams
+  const { canceled, noselection } = await searchParams;
 
   if (canceled) {
     console.log(
