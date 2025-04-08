@@ -8,25 +8,24 @@ import { verifyToken } from "@/lib/auth/session";
 
 export async function getUser() {
   try {
-    // Properly await cookies() in Server Actions
+    // Get cookies from the server request context
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("session");
 
     if (!sessionCookie?.value) {
+      console.error("[getUser] No session cookie found");
       return null;
     }
 
+    // Decode and verify session token
     const sessionData = await verifyToken(sessionCookie.value);
+
     if (!sessionData?.user?.id) {
+      console.error("[getUser] Invalid session token - missing user ID");
       return null;
     }
 
-    // Check session expiration
-    if (sessionData.expires && new Date(sessionData.expires) < new Date()) {
-      return null;
-    }
-
-    // Fetch user from database
+    // Fetch user from database if not soft-deleted
     const [user] = await db
       .select()
       .from(users)
@@ -35,7 +34,7 @@ export async function getUser() {
 
     return user || null;
   } catch (error) {
-    // Return null on any error to fail gracefully
+    console.error("[getUser] Error fetching user:", error);
     return null;
   }
 }
@@ -122,20 +121,22 @@ export async function getActivityLogs() {
 }
 
 export async function getTeamForUser(userId: number) {
-  const result = await db.query.users.findFirst({
-    where: eq(users.id, userId),
-    with: {
-      teamMembers: {
-        with: {
-          team: {
-            with: {
-              teamMembers: {
-                with: {
-                  user: {
-                    columns: {
-                      id: true,
-                      name: true,
-                      email: true,
+  try {
+    const result = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      with: {
+        teamMembers: {
+          with: {
+            team: {
+              with: {
+                teamMembers: {
+                  with: {
+                    user: {
+                      columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                      },
                     },
                   },
                 },
@@ -144,8 +145,28 @@ export async function getTeamForUser(userId: number) {
           },
         },
       },
-    },
-  });
+    });
 
-  return result?.teamMembers[0]?.team || null;
+    if (!result) {
+      console.warn(`[getTeamForUser] No user found with ID: ${userId}`);
+      return null;
+    }
+
+    if (!result.teamMembers || result.teamMembers.length === 0) {
+      console.info(`[getTeamForUser] User ${userId} has no team memberships`);
+      return null;
+    }
+
+    const team = result.teamMembers[0]?.team;
+
+    if (!team) {
+      console.info(`[getTeamForUser] User ${userId} has no associated team`);
+      return null;
+    }
+
+    return team;
+  } catch (error) {
+    console.error("[getTeamForUser] Error fetching team for user:", error);
+    return null;
+  }
 }

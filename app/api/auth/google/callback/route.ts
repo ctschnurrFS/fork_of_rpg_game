@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
-import { createSessionToken } from "@/lib/auth/session";
-import { cookies } from "next/headers"; // <-- This is correct
+import { createSessionToken, setSession } from "@/lib/auth/session";
+import { cookies } from "next/headers";
+import { db } from "@/lib/db/drizzle";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 const googleClient = new OAuth2Client({
   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -16,7 +19,7 @@ export async function GET(request: Request) {
     const state = searchParams.get("state");
 
     // Validate state parameter
-    const cookieStore = await cookies(); // Await the cookies function here
+    const cookieStore = await cookies();
     const storedState = cookieStore.get("google_oauth_state")?.value;
     if (!state || !storedState || state !== storedState) {
       return NextResponse.redirect(
@@ -36,9 +39,15 @@ export async function GET(request: Request) {
       redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/google/callback`,
     });
 
+    if (!tokens.id_token) {
+      return NextResponse.redirect(
+        new URL("/sign-in?error=no_id_token", request.url)
+      );
+    }
+
     // Verify ID token
     const ticket = await googleClient.verifyIdToken({
-      idToken: tokens.id_token!,
+      idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID!,
     });
 
@@ -49,11 +58,50 @@ export async function GET(request: Request) {
       );
     }
 
-    // Create session
-    await createSessionToken(payload.email);
+    // Find or create user in database
+    let user = await db.query.users.findFirst({
+      where: eq(users.email, payload.email),
+    });
 
-    // Redirect to dashboard
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (!user) {
+      // Create new user if doesn't exist
+      [user] = await db
+        .insert(users)
+        .values({
+          email: payload.email,
+          name: payload.name,
+          image: payload.picture,
+          // Add other required fields
+        })
+        .returning();
+    }
+
+    if (!user?.id) {
+      throw new Error("Failed to create user");
+    }
+
+    // Create response object
+    const response = NextResponse.redirect(new URL("/dashboard", request.url));
+
+    // Set session cookie
+    response.cookies.set({
+      name: "session",
+      value: await createSessionToken({
+        id: user.id,
+        email: user.email,
+      }),
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    // Cleanup OAuth state cookie
+    response.cookies.delete("google_oauth_state");
+
+    console.log("Auth successful for user:", user.email);
+    return response;
   } catch (error) {
     console.error("Google callback error:", error);
     return NextResponse.redirect(

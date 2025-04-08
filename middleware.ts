@@ -1,48 +1,57 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { signToken, verifyToken } from '@/lib/auth/session';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { createSessionToken, verifyToken } from "@/lib/auth/session"; // Updated import
 
-const protectedRoutes = '/dashboard';
+const protectedRoutes = "/dashboard";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionCookie = request.cookies.get('session');
+  const sessionCookie = request.cookies.get("session");
   const isProtectedRoute = pathname.startsWith(protectedRoutes);
 
+  // Redirect to sign-in if protected route and no session
   if (isProtectedRoute && !sessionCookie) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  let res = NextResponse.next();
+  let response = NextResponse.next();
 
   if (sessionCookie) {
     try {
-      const parsed = await verifyToken(sessionCookie.value);
-      const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const sessionData = await verifyToken(sessionCookie.value);
 
-      res.cookies.set({
-        name: 'session',
-        value: await signToken({
-          ...parsed,
-          expires: expiresInOneDay.toISOString(),
-        }),
+      if (!sessionData?.user?.id) {
+        throw new Error("Invalid session data");
+      }
+
+      // Refresh the session token
+      const newToken = await createSessionToken({
+        id: sessionData.user.id,
+        email: sessionData.user.email,
+      });
+
+      // Set the new token
+      response.cookies.set({
+        name: "session",
+        value: newToken,
         httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        expires: expiresInOneDay,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 24 * 60 * 60, // 1 day
       });
     } catch (error) {
-      console.error('Error updating session:', error);
-      res.cookies.delete('session');
+      console.error("Session verification failed:", error);
+      response.cookies.delete("session");
       if (isProtectedRoute) {
-        return NextResponse.redirect(new URL('/sign-in', request.url));
+        return NextResponse.redirect(new URL("/sign-in", request.url));
       }
     }
   }
 
-  return res;
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
