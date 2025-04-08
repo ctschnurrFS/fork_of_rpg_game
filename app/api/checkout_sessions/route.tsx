@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!priceId) {
       // Construct the full URL for the redirect
       // Absolute URL to /dashboard with fallback
-      const redirectUrl = new URL('/dashboard/purchase?noselection=true', origin || 'http://localhost:3000'); 
+      const redirectUrl = new URL('/dashboard/purchase?noselection=true', origin || 'http://localhost:3000');
 
       return NextResponse.redirect(redirectUrl.toString());
     }    

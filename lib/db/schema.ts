@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   integer,
+  jsonb,
   numeric,
   unique,
 } from "drizzle-orm/pg-core";
@@ -39,9 +40,17 @@ export const users = pgTable("users", {
       "Sorcerer",
     ],
   }),
+  location_id: text('location_id')
+  .notNull()
+  .references(() => game_locations.location_id)
 });
 
-// New tables required for NextAuth
+export const game_locations = pgTable('game_locations', {
+  location_id: text('location_id').primaryKey(),
+  description: text('description').notNull(),
+  doors: jsonb('doors').default('{}'),
+});
+
 export const accounts = pgTable(
   "accounts",
   {
@@ -88,17 +97,16 @@ export const verificationTokens = pgTable(
   })
 );
 
-// Your existing tables remain unchanged
-export const teams = pgTable("teams", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  stripeCustomerId: text("stripe_customer_id").unique(),
-  stripeSubscriptionId: text("stripe_subscription_id").unique(),
-  stripeProductId: text("stripe_product_id"),
-  planName: varchar("plan_name", { length: 50 }),
-  subscriptionStatus: varchar("subscription_status", { length: 20 }),
+export const teams = pgTable('teams', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  stripeCustomerId: text('stripe_customer_id').unique(),
+  stripeSubscriptionId: text('stripe_subscription_id').unique(),
+  stripeProductId: text('stripe_product_id'),
+  planName: varchar('plan_name', { length: 50 }),
+  subscriptionStatus: varchar('subscription_status', { length: 20 }),
 });
 
 export const userPurchasesTable = pgTable("user_purchase", {

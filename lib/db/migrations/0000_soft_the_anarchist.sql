@@ -48,7 +48,16 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	"location_id" text NOT NULL,
+    CONSTRAINT "users_email_unique" UNIQUE("email"),
+    CONSTRAINT "fk_location_id" FOREIGN KEY ("location_id") REFERENCES "game_locations"("location_id") ON DELETE SET DEFAULT
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "game_locations" (
+    "location_id" serial PRIMARY KEY NOT NULL,
+    "description" text NOT NULL,
+    "doors" jsonb,
+    CONSTRAINT "game_locations_location_id_unique" UNIQUE("location_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN
