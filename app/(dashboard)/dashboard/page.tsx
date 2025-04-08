@@ -37,15 +37,17 @@ export default async function SettingsPage() {
       isDeleted: !!user.deletedAt,
     });
 
-    const teamData = await getTeamForUser(user.id);
+    let teamData = await getTeamForUser(user.id);
     logDebugInfo("Team data", teamData);
 
+    // If no team data, we handle it gracefully without throwing an error
     if (!teamData) {
-      logDebugInfo("Team not found error", {
+      logDebugInfo("User has no team, allowing them to continue", {
         userId: user.id,
         userEmail: user.email,
       });
-      throw new Error("Team not found");
+      // Optionally, display a message or render fallback UI
+      teamData = { id: null, name: "No Team", teamMembers: [] };
     }
 
     // Debug 3: Final successful render
