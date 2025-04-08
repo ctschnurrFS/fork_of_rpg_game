@@ -11,10 +11,7 @@ export async function POST(req: Request) {
 
     const { prompt } = await req.json(); // Receive prompt from client
 
-    //let contentImage = "Please generate a small image in the style of a painting as if painted on parchment with natural dyes, with faded colors and subtle stains, as if aged by centuries based on the following text: " + prompt; 
-    //let contentImage = "Please generate a small image in the style of illustrator Alan Lee's Lord of the Rings paintings based on the following text: " + prompt; 
-    let contentImage = "Please generate a small size image in the style of Pieter Bruegel the Elder's paintings based on the following text: " + prompt;
-    //let contentImage = "Please generate a super small size image in the style of Picasso's paintings based on the following text: " + prompt;
+    let contentImage = "Please generate an image in the style of Pieter Bruegel the Elder's paintings based on the following prompt: " + prompt;
 
     if (!prompt) {
       return NextResponse.json({ error: "No prompt provided" }, { status: 400 });

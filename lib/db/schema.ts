@@ -49,6 +49,7 @@ export const game_locations = pgTable('game_locations', {
   location_id: text('location_id').primaryKey(),
   description: text('description').notNull(),
   doors: jsonb('doors').default('{}'),
+  npc: text('npc'), 
 });
 
 export const accounts = pgTable(
