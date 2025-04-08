@@ -1,43 +1,70 @@
 "use client";
 import { useState } from "react";
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
 export function useGemini() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [prompt, setPrompt] = useState<string | null>(null);
-    const [npcState, setNpc] = useState<string | null>(null);
-    //const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [responseText, setResponseText] = useState<string | null>(null);
 
     const queryGemini = async (message: string, npc: string): Promise<string> => {
-    //const queryGemini = async (message: string): Promise<{ html: string; imageUrl: string | null }> => {
 
         setLoading(true);
         setError(null);
-        //setImageUrl(null);
-        setPrompt(message);
-        setNpc(npc);
-        //const originalMessage = message;
+        setResponseText(null);
 
-        let messageImage = "Please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. " +  message;
-        //message = "please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. And please limit your answer to 200 words or less. Here is the npc character details: " + npc + " and here is the question for them to answer: " +  message;
-        message = "please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. And please limit your answer to 150 words or less. Here are the npc character details: " + npc + " and here is the question for them to answer: " +  message;
+        message = "Please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. And please limit your answer to 150 words or less. Here are the npc character details: " + npc + " and here is the question for them to answer: " +  message;
         
-        //console.log(message);
-
         try {
-            const response = await ai.models.generateContent({
-                // model: "gemini-2.0-flash",
-                // contents: message,
-                model: 'gemini-2.0-flash-exp-image-generation',
-                contents: message,
-                config: {
-                    responseModalities: ['Text', 'Image']
-                },
+
+            // Call Gemini Text API
+            const response = await fetch("/api/gemini", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message }),
             });
+
+            if (!response.ok) {
+                const errorText = await response.text(); 
+                throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+            }
+
+            const data = await response.json();
+            setResponseText(data.text);  
+
+            return data.text;
+
+         } catch (err: unknown) { 
+                let errorMessage = "An unknown error occurred";
+                if (err instanceof Error) {
+                    errorMessage = err.message;
+                } else if (typeof err === 'string') {
+                    errorMessage = err;
+                }
+                setError(errorMessage);
+                return "";
+            } finally {
+            setLoading(false);
+        }  
+    };
+
+    return { queryGemini, responseText, loading, error };
+}                   
+
+            // const data = await response.json();
+            // const aiText: string = data.text; // Or simply: const aiText = data.text;
+
+            // return aiText;
+
+            // const response = await ai.models.generateContent({
+            //     // model: "gemini-2.0-flash",
+            //     // contents: message,
+            //     model: 'gemini-2.0-flash-exp-image-generation',
+            //     contents: message,
+            //     config: {
+            //         responseModalities: ['Text', 'Image']
+            //     },
+            // });
 
             ///////////////////////////////////////////////////////
 
@@ -61,18 +88,20 @@ export function useGemini() {
             //     console.log("Failed to generate image");
             // }       
 
-            let returnHtml = "<div>" + response.text + "</div>";
-            //returnHtml += "</div>";
+            // console.log(" response.text:  " +  response.text);
+            // console.log(" response.tet:  " +  response);
+            // let returnHtml = "<div>" + response.text + "</div>";
+            // //returnHtml += "</div>";
 
-            return returnHtml;
+            // return returnHtml;
 
-        } catch (err: any) {
-            setError(err.message);
-            return `Error: ${err.message}`;
-        } finally {
-            setLoading(false);
-        }
-    };
+//         } catch (err: any) {
+//             setError(err.message);
+//             return `Error: ${err.message}`;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
 
-    return { queryGemini, loading, error };
-}
+//     return { queryGemini, loading, error };
+// }
