@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export function callGemini() {
+export function useCallGemini() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

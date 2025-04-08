@@ -36,6 +36,7 @@ export default async function purchaselist() {
                                         <th className="py-2 px-4 text-left font-semibold text-gray-700">Price</th>
                                         <th className="py-2 px-4 text-left font-semibold text-gray-700">Quantity</th>
                                         <th className="py-2 px-4 text-left font-semibold text-gray-700">Purchase Date</th>
+                                        <th className="py-2 px-4 text-left font-semibold text-gray-700">Image</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,6 +47,11 @@ export default async function purchaselist() {
                                             <td className="py-2 px-4">${purchase.price}</td>
                                             <td className="py-2 px-4">{purchase.quantity}</td>
                                             <td className="py-2 px-4">{purchase.purchaseDate ? purchase.purchaseDate.toLocaleString() : 'N/A'}</td> 
+                                            <td className="py-2 px-4">
+                                                <a href={purchase.itemImageLink} target="_blank" rel="noopener noreferrer">  
+                                                <img src={purchase.itemImageLink} alt={purchase.itemName} className="w-16 h-16 rounded-lg" />
+                                                </a>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

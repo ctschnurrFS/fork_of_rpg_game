@@ -4,7 +4,7 @@ import { getLocationData, setUserLocation } from '@/lib/db/queries';
 
 let current_player: { id: number; name: any; location_id: string}
 
-let current_location_data: { location_id: string; description: string; doors: unknown; }
+let current_location_data: { location_id: string; description: string; doors: unknown; npc?: string }
 let current_location_door_data: any
 
 export const setupActions = async (user: { id: number; name: any; location_id: string; }) => {
@@ -26,6 +26,7 @@ const outputToTerminal = (output: any) => {
 
 const setCurrentLocationData = async (player_location: string) => {
     let location_data =  await getPlayerLocationData(player_location);
+    console.log("location_data.npc: " + location_data.npc);
     current_location_data = location_data
     current_location_door_data = location_data.doors
     handleLook()
@@ -33,10 +34,11 @@ const setCurrentLocationData = async (player_location: string) => {
 }
 
 const getPlayerLocationData = async (player_location: string) =>{
-    let location_data =  await getLocationData(player_location);
+    let location_data =  await getLocationData(player_location) as { location_id: string; description: string; doors: unknown; npc?: string };
     if(!location_data) {
         outputToTerminal(`<span class="text-red-500">Error</span>: No location data found for location id ${player_location}, returning to Castle Courtyard.`)
-        location_data =  await getLocationData(`castle_courtyard`);
+        location_data =  await getLocationData(`castle_courtyard`) as { location_id: string; description: string; doors: unknown; npc?: string };        
+        console.log(`location_data - ${location_data}`);
     }
     return location_data
 }
@@ -55,7 +57,7 @@ const handleWalk = (direction: string)=>{
     for (const [door_direction, doorData] of Object.entries(current_location_door_data) as [string, {
         travel_string: string;
         destination_id: string;
-        door_description: string;
+        door_description: string
       }][]) {
         if(door_direction == direction){
             destination_id = doorData.destination_id
@@ -76,7 +78,7 @@ const handleLook = () => {
     for (const [direction, doorData] of Object.entries(current_location_door_data) as [string, {
       travel_string: string;
       destination_id: string;
-      door_description: string;
+      door_description: string
     }][]) {
       output += `${doorData.door_description} `
     }
@@ -124,11 +126,22 @@ export const handleUserInput = async (
             handleWalk(direction_string)
           break;
         case "ask": // This triggers the Gemini query
+
             outputToTerminal("Getting a response from Gemini AI...");
             try {
-              const geminiResponse = await queryGemini(rest_of_input); // Query Gemini AI
-              console.log("geminiResponse: ", geminiResponse);
-              outputToTerminal(`<span class="font-bold">You asked:</span> ${rest_of_input} <br><span class="font-bold">Answer:</span>   ${geminiResponse} `)
+
+              if (current_location_data.npc) {
+                const geminiResponse = await queryGemini(rest_of_input, current_location_data.npc); // Query Gemini AI
+                console.log(`You see ${current_location_data.npc} here.`);
+                outputToTerminal(`<span class="font-bold">They respond: </span>   ${geminiResponse} `)
+              } else {
+                outputToTerminal(`No one is here.`)
+                console.log('No one is here.');
+              }
+              
+              // const geminiResponse = await queryGemini(rest_of_input, npc); // Query Gemini AI
+              // console.log("geminiResponse: ", geminiResponse);
+              //outputToTerminal(`<span class="font-bold">You asked:</span> ${rest_of_input} <br><span class="font-bold">Answer:</span>   ${geminiResponse} `)
             } catch (err) {
               outputToTerminal(`Error: ${ err instanceof Error ? err.message : "An unknown error occurred" }`);
             }
