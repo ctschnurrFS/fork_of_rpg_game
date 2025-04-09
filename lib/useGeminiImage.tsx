@@ -30,8 +30,8 @@ export function useGeminiImage() {
                 const imageUrl = URL.createObjectURL(blob);
                 setImageUrl(imageUrl);
 
-                returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='border: 6px groove #8B795E; padding: 4px; box-sizing: border-box; display: block; max-width: 100%; height: auto;' />`;             
-                //returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='height: 375px; width: auto; border: 3px solid #5a3e1b; padding: 5px;background-color: #f5f1e8;box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);filter: contrast(90%) brightness(90%);border-radius: 8px;' />`;             
+                //returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='height: 375px; border: 6px groove #8B795E; padding: 4px; box-sizing: border-box; display: block; max-width: 100%; height: auto;' />`;             
+                returnHtml +=  `<img src='${imageUrl}' alt='Generated'  style='height: 375px; width: auto; border: 3px solid #5a3e1b; padding: 5px;background-color: #f5f1e8;box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);filter: contrast(90%) brightness(90%);border-radius: 8px;' />`;             
             } else {
                 console.log("Failed to generate image");
             } 
