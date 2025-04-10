@@ -52,11 +52,11 @@ export default async function Success({ searchParams }: { searchParams: { sessio
           itemImageLink = "/images/armour.jpg";
         break;
 
-        case "F-15 Eagle":
-          itemImageLink = "/images/f-15.jpg";
+        case "50 Gold Pieces":
+          itemImageLink = "/images/gold_coins.png";
         break;   
         
-        case "Whisky Barrel":
+        case "Cask of Whiskey":
           itemImageLink = "/images/brandycask.png";
         break;
     

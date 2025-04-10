@@ -24,7 +24,8 @@ type ActionState = {
 export function InviteTeamMember() {
   const { userPromise } = useUser();
   const user = use(userPromise);
-  const isOwner = user?.role === 'owner';
+  const isOwnerOrAdmin = user?.role === 'owner' || user?.role === 'admin';
+  //const isOwner = user?.role === 'owner';
   const [inviteState, inviteAction, isInvitePending] = useActionState<
     ActionState,
     FormData
@@ -33,7 +34,7 @@ export function InviteTeamMember() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
+        <CardTitle>Invite New Player</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={inviteAction} className="space-y-4">
@@ -45,7 +46,7 @@ export function InviteTeamMember() {
               type="email"
               placeholder="Enter email"
               required
-              disabled={!isOwner}
+              disabled={!isOwnerOrAdmin}
             />
           </div>
           <div>
@@ -54,7 +55,7 @@ export function InviteTeamMember() {
               defaultValue="member"
               name="role"
               className="flex space-x-4"
-              disabled={!isOwner}
+              disabled={!isOwnerOrAdmin}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="member" id="member" />
@@ -75,7 +76,7 @@ export function InviteTeamMember() {
           <Button
             type="submit"
             className="bg-orange-500 hover:bg-orange-600 text-white"
-            disabled={isInvitePending || !isOwner}
+            disabled={isInvitePending || !isOwnerOrAdmin}
           >
             {isInvitePending ? (
               <>
@@ -85,16 +86,16 @@ export function InviteTeamMember() {
             ) : (
               <>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Invite Member
+                Invite Player
               </>
             )}
           </Button>
         </form>
       </CardContent>
-      {!isOwner && (
+      {!isOwnerOrAdmin && (
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            You must be a team owner to invite new members.
+            You must be an owner or admin to invite new players.
           </p>
         </CardFooter>
       )}

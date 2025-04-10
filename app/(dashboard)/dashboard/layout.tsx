@@ -17,12 +17,14 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: '/dashboard/dashboardrpg', icon: LayoutDashboard, label: 'Game Dashboard' },
-    { href: '/dashboard', icon: Users, label: 'Team' },
-    { href: '/dashboard/general', icon: Settings, label: 'General' },
+    { href: '/dashboard/userslist', icon: Users, label: 'Site Users' },
+    { href: '/dashboard', icon: Users, label: 'Invite New User' },
+    { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'In Game Purchases' }, 
+    { href: '/dashboard/general', icon: Settings, label: 'General' },    
+    { href: '/dashboard/security', icon: Shield, label: 'Change Password' },
     { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
-    { href: '/dashboard/security', icon: Shield, label: 'Security' },
-    // { href: '/dashboard/purchase', icon: DollarSign, label: 'Purchase Item' },    
-    { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'Purchase List' }, 
+  
+    
   ];
 
   return (

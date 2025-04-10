@@ -26,9 +26,7 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">Team Settings</h1>
-      <InviteTeamMember />
-
+      <h1 className="text-lg lg:text-2xl font-medium mb-6">New RPG Player</h1>
       {/* <Card className="mb-8">
         <CardHeader>
           <CardTitle>Team Subscription</CardTitle>
@@ -108,7 +106,7 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
           )}
         </CardContent>
       </Card> */}
-      
+      <InviteTeamMember />
     </section>
   );
 }
