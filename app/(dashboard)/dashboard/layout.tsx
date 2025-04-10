@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, Shield, Activity, Menu, DollarSign } from 'lucide-react';
+import { Users, Settings, Shield, Activity, Menu, DollarSign, LayoutDashboard } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -14,12 +14,14 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+
   const navItems = [
+    { href: '/dashboard/dashboardrpg', icon: LayoutDashboard, label: 'Game Dashboard' },
     { href: '/dashboard', icon: Users, label: 'Team' },
     { href: '/dashboard/general', icon: Settings, label: 'General' },
     { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
     { href: '/dashboard/security', icon: Shield, label: 'Security' },
-    { href: '/dashboard/purchase', icon: DollarSign, label: 'Purchase Item' },    
+    // { href: '/dashboard/purchase', icon: DollarSign, label: 'Purchase Item' },    
     { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'Purchase List' }, 
   ];
 

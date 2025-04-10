@@ -93,7 +93,7 @@ const handleLook = (showImage?: string) => {
     returnHtml += "<p>" + output + "</p>";
     returnHtml += "</div>";
     
-    // --- MODIFIED IMAGE CONTAINER AND IMAGE STYLES BELOW ---
+
     // Image Container Div (Set not to shrink)
     returnHtml += `<div style='flex-shrink: 0;'>`; // Prevent this container from shrinking
     returnHtml += `<img src='${current_location_data.image_link}' alt='Generated'
@@ -109,9 +109,7 @@ const handleLook = (showImage?: string) => {
                             filter: contrast(90%) brightness(90%);
                             border-radius: 8px;'
                     />`;
-    returnHtml += "</div>"; // Close Image container
-    // --- END OF MODIFIED STYLES ---
-    
+    returnHtml += "</div>"; // Close Image container    
     returnHtml += "</div>"; // Close parent flex container
 
     output = returnHtml;
