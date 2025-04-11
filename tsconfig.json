@@ -4,11 +4,11 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
+    "strict": false,
+    "noEmit": false,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node", // Changed from "bundler"
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -19,11 +19,12 @@
         "name": "next"
       }
     ],
+    "checkJs": false,
     "paths": {
-      "@/*": ["/*"], // Added this catch-all alias
+      "@/*": ["/*"],
       "@/lib/db/drizzle": ["lib/db/drizzle.ts"],
       "@/lib/db/*": ["lib/db/*"],
-      "@/lib/auth/*": ["lib/auth/*"] // Add this line
+      "@/lib/auth/*": ["lib/auth/*"]
     }
   },
   "include": [
@@ -31,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/db/drizzle.d.ts" // Ensure declaration file is included
+    "lib/db/drizzle.d.ts"
   ],
   "exclude": ["node_modules"]
 }

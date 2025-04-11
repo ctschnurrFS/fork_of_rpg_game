@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Settings,
@@ -12,9 +15,8 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { ActivityType } from '@/lib/db/schema';
-import { getActivityLogs } from '@/lib/db/queries';
 
-const iconMap: Record<ActivityType, LucideIcon> = {
+const iconMap: Record<string, LucideIcon> = {
   [ActivityType.SIGN_UP]: UserPlus,
   [ActivityType.SIGN_IN]: UserCog,
   [ActivityType.SIGN_OUT]: LogOut,
@@ -32,12 +34,9 @@ function getRelativeTime(date: Date) {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
   return date.toLocaleDateString();
 }
 
@@ -68,8 +67,39 @@ function formatAction(action: ActivityType): string {
   }
 }
 
-export default async function ActivityPage() {
-  const logs = await getActivityLogs();
+async function fetchActivityLogs() {
+  const response = await fetch('/api/activity-logs'); // Use API route to fetch logs
+  if (!response.ok) {
+    throw new Error('Failed to fetch activity logs');
+  }
+  return response.json();
+}
+
+interface ActivityPageProps {
+  logs: Array<{ id: string; action: string; ipAddress?: string; timestamp: string }>;
+}
+
+export default function ActivityPage() {
+  const [logs, setLogs] = useState<ActivityPageProps['logs']>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    const getLogs = async () => {
+      try {
+        const data = await fetchActivityLogs();
+        setLogs(data);
+      } catch (err) {
+        setError('Failed to load activity logs.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    getLogs();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <section className="flex-1 p-4 lg:p-8">
@@ -84,10 +114,8 @@ export default async function ActivityPage() {
           {logs.length > 0 ? (
             <ul className="space-y-4">
               {logs.map((log) => {
-                const Icon = iconMap[log.action as ActivityType] || Settings;
-                const formattedAction = formatAction(
-                  log.action as ActivityType
-                );
+                const Icon = iconMap[log.action] || Settings; // Default to Settings if no match
+                const formattedAction = formatAction(log.action as ActivityType);
 
                 return (
                   <li key={log.id} className="flex items-center space-x-4">

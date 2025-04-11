@@ -13,7 +13,7 @@ export async function getUser() {
     const sessionCookie = cookieStore.get("session");
 
     if (!sessionCookie?.value) {
-      console.error("[getUser] No session cookie found");
+      console.info("[getUser] No session cookie found — user not logged in");
       return null;
     }
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { setupActions, handleUserInput } from './actions';
-import { useGemini } from "@/lib/useGemini";
+import { useGemini } from '../../lib/useGemini';
 
 export function Terminal(props: { player: any; }) {
   const user = props.player
