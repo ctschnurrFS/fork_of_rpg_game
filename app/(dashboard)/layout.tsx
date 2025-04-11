@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { use, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Crosshair, Home, LogOut } from 'lucide-react';
+import { Crosshair, Home, LogOut, Star } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,10 +37,16 @@ function Header() {
         <div className="flex items-center space-x-4">
           <Link
             href="/pricing"
+            className="inline-block rounded-md bg-yellow-600 px-4 py-2 text-base font-semibold text-amber-50 shadow-md transition duration-150 ease-in-out hover:bg-yellow-700 hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2" // Example Tailwind styling
+          >
+            Check out our Game Store!
+          </Link>
+          {/* <Link
+            href="/pricing"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
           >
-            Store
-          </Link>
+            Buy some loot!
+          </Link> */}
           {user ? (
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger>
@@ -55,12 +61,33 @@ function Header() {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="flex flex-col gap-1">
-                <DropdownMenuItem className="cursor-pointer">
-                  <Link href="/dashboard" className="flex w-full items-center">
-                    <Home className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
+
+                {/* Show if role is 'admin' OR 'owner' */}
+                {(user?.role === 'admin' || user?.role === 'owner') && (
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link href="/dashboard" className="flex w-full items-center">
+                      <Home className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {/* === CONDITIONAL LINK START === */}
+                {/* Check if user exists (already true here), has a role, and role is 'regular' */}
+                {/* Using optional chaining (?.) is safest */}
+                {(user?.role === 'regular' || user?.role === 'member') && (
+                  <DropdownMenuItem className="cursor-pointer p-0">
+                    {/* Replace href and text with your actual link/feature */}
+                    <Link href="/myuseraccount" className="flex w-full items-center px-2 py-1.5">
+                      {/* Replace with a relevant icon */}
+                      <Star className="mr-2 h-4 w-4" />
+                      <span>My Account</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {/* === CONDITIONAL LINK END === */}
+
+
                 <form action={handleSignOut} className="w-full">
                   <button type="submit" className="flex w-full">
                     <DropdownMenuItem className="w-full flex-1 cursor-pointer">

@@ -50,6 +50,7 @@ export const game_locations = pgTable('game_locations', {
   description: text('description').notNull(),
   doors: jsonb('doors').default('{}'),
   npc: text('npc'), 
+  image_link: text("image_link"),
 });
 
 export const accounts = pgTable(
