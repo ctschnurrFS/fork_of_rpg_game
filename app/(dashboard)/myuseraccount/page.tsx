@@ -3,6 +3,8 @@
 import { use, useState, startTransition, useActionState } from "react";
 import { useUser } from "@/lib/auth";
 import { AccountInfoCard } from "@/app/(dashboard)/dashboard/general/components/AccountInfoCard";
+import { MyPurchasesListCard } from "./components/MyPurchases";
+import LocationDisplay from "./components/MyLocation";
 import { updateAccount } from "@/app/(login)/actions"; // Update the path to the correct location
 
 import { Button } from '@/components/ui/button';
@@ -114,25 +116,18 @@ export default function GeneralPage() {
       {/* Wrap the three cards in a div with grid classes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Current Location</CardTitle>
           </CardHeader>
           <CardContent>
 
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Purchases</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <LocationDisplay locationId={user.location_id}></LocationDisplay>
 
-          </CardContent>
-        </Card>
-
-
+        <MyPurchasesListCard  userId={user.id}></MyPurchasesListCard>
 
         {user?.role === "regular" ? (
           <ClassSelector
