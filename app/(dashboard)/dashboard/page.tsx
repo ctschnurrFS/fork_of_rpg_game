@@ -82,6 +82,70 @@ export default async function SettingsPage() {
         {/* Wrap the three cards in a div with grid classes */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
 
+        <Link href="dashboard/userslist" className="block hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
+            <Card className="
+              transition-all duration-300 ease-in-out  /* --- Base transition --- */
+              hover:shadow-xl                         /* --- Increased shadow on hover --- */
+              hover:scale-[1.03]                      /* --- Scale up slightly (3%) on hover --- */
+              ">
+              <CardHeader>
+                <CardTitle>Number of Users</CardTitle>
+                <div className="mt-1 mb-2 h-px w-full bg-gray-300 dark:bg-gray-600" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{usersCount}</p>
+
+                <div className="mb-4 h-30 w-30 relative pt-2"> {/* Container for responsive image */}
+
+                  <img
+                    src="/images/people.png"
+                    alt="Revenue illustration" // Descriptive alt text
+                    // Explicit size (w-20/h-20 = 5rem = 80px) and object-fit
+                    className="w-30 h-30 object-cover rounded-md"
+                  // You might want rounded corners, etc.
+                  // className="w-20 h-20 object-cover rounded-md"
+                  />
+                </div>
+
+                <p>Latest Sign In:</p>
+                {latestSignIn?.userName}
+                <p>
+                  {latestSignIn?.signInTime ? latestSignIn?.signInTime.toLocaleDateString('en-CA') : 'N/A'}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="dashboard/gamelocations" className="block hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
+            <Card className="
+              transition-all duration-300 ease-in-out  /* --- Base transition --- */
+              hover:shadow-xl                         /* --- Increased shadow on hover --- */
+              hover:scale-[1.03]                      /* --- Scale up slightly (3%) on hover --- */
+              ">
+              <CardHeader>
+                <CardTitle>Game Locations</CardTitle>
+                <div className="mt-1 mb-2 h-px w-full bg-gray-300 dark:bg-gray-600" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{locationsCount}</p>
+
+                <div className="mb-4 h-30 w-30 relative pt-2"> {/* Container for responsive image */}
+                  <img
+                    src="/images/room.png"
+                    alt="Revenue illustration" // Descriptive alt text
+                    // Explicit size (w-20/h-20 = 5rem = 80px) and object-fit
+                    className="w-30 h-30 object-cover rounded-md"
+                  // You might want rounded corners, etc.
+                  // className="w-20 h-20 object-cover rounded-md"
+                  />
+                </div>
+                <p>&nbsp;</p>
+                &nbsp;
+                <p>
+                  &nbsp;
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
           <Link href="dashboard/purchase/purchaselist" className="block hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
             <Card className="
               transition-all duration-300 ease-in-out  /* --- Base transition --- */
@@ -149,70 +213,7 @@ export default async function SettingsPage() {
               </CardContent>
             </Card>
           </Link>
-          <Link href="dashboard/userslist" className="block hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
-            <Card className="
-              transition-all duration-300 ease-in-out  /* --- Base transition --- */
-              hover:shadow-xl                         /* --- Increased shadow on hover --- */
-              hover:scale-[1.03]                      /* --- Scale up slightly (3%) on hover --- */
-              ">
-              <CardHeader>
-                <CardTitle>Number Users</CardTitle>
-                <div className="mt-1 mb-2 h-px w-full bg-gray-300 dark:bg-gray-600" />
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{usersCount}</p>
 
-                <div className="mb-4 h-30 w-30 relative pt-2"> {/* Container for responsive image */}
-
-                  <img
-                    src="/images/people.png"
-                    alt="Revenue illustration" // Descriptive alt text
-                    // Explicit size (w-20/h-20 = 5rem = 80px) and object-fit
-                    className="w-30 h-30 object-cover rounded-md"
-                  // You might want rounded corners, etc.
-                  // className="w-20 h-20 object-cover rounded-md"
-                  />
-                </div>
-
-                <p>Latest Sign In:</p>
-                {latestSignIn?.userName}
-                <p>
-                  {latestSignIn?.signInTime ? latestSignIn?.signInTime.toLocaleDateString('en-CA') : 'N/A'}
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="dashboard/gamelocations" className="block hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
-            <Card className="
-              transition-all duration-300 ease-in-out  /* --- Base transition --- */
-              hover:shadow-xl                         /* --- Increased shadow on hover --- */
-              hover:scale-[1.03]                      /* --- Scale up slightly (3%) on hover --- */
-              ">
-              <CardHeader>
-                <CardTitle>Game Locations</CardTitle>
-                <div className="mt-1 mb-2 h-px w-full bg-gray-300 dark:bg-gray-600" />
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{locationsCount}</p>
-
-                <div className="mb-4 h-30 w-30 relative pt-2"> {/* Container for responsive image */}
-                  <img
-                    src="/images/room.png"
-                    alt="Revenue illustration" // Descriptive alt text
-                    // Explicit size (w-20/h-20 = 5rem = 80px) and object-fit
-                    className="w-30 h-30 object-cover rounded-md"
-                  // You might want rounded corners, etc.
-                  // className="w-20 h-20 object-cover rounded-md"
-                  />
-                </div>
-                <p>&nbsp;</p>
-                &nbsp;
-                <p>
-                  &nbsp;
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
         </div>
       </section >
     )

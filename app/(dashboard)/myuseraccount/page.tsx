@@ -116,15 +116,6 @@ export default function GeneralPage() {
       {/* Wrap the three cards in a div with grid classes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Current Location</CardTitle>
-          </CardHeader>
-          <CardContent>
-
-          </CardContent>
-        </Card> */}
-
         <LocationDisplay locationId={user.location_id}></LocationDisplay>
 
         <MyPurchasesListCard  userId={user.id}></MyPurchasesListCard>

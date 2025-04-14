@@ -129,31 +129,6 @@ if (isLoading) {
                     {locationData.description}
                 </p>
             </div>
-
-            {/* NPC Section (Conditional) */}
-            {locationData.npc && (
-                <div className="pt-2"> {/* Add slight padding top for separation */}
-                    <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">NPC Present</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{locationData.npc}</p>
-                </div>
-            )}
-
-            {/* Doors Section */}
-            <div className="pt-2"> {/* Add slight padding top for separation */}
-                <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">Exits</h4>
-                {Object.keys(locationData.doors).length > 0 ? (
-                    <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-gray-500 dark:text-gray-400">
-                        {Object.entries(locationData.doors).map(([direction, destination]) => (
-                            <li key={direction}>
-                                <span className="font-medium capitalize text-gray-700 dark:text-gray-300">{direction}:</span> 
-                                {/* {Leads to {String(destination)}} */}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">No exits defined for this location.</p>
-                )}
-            </div>
         </div>
     );
 }

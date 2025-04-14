@@ -46,6 +46,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
           <div className="flex justify-center">
             <img
               src="/images/Rogue_Terminal_Logo.svg"
+              //src="/images/RogueTerminal.jpg"
               alt="My Company Logo"
               className="h-60 w-auto"
             />
