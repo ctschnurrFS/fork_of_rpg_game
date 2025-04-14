@@ -7,7 +7,7 @@ const googleClient = new OAuth2Client({
   redirectUri: `${process.env.NEXTAUTH_URL}/api/auth/google/callback`,
 });
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const state = crypto.randomUUID();
     const nonce = crypto.randomUUID(); // Add nonce for additional security
@@ -21,7 +21,11 @@ export async function GET() {
       include_granted_scopes: true,
     });
 
-    const response = NextResponse.redirect(authorizationUrl);
+    const response = NextResponse.redirect(authorizationUrl, {
+      headers: {
+        // optional: preserve any headers or add logs here
+      },
+    });
 
     // Set both state and nonce as HttpOnly cookies
     response.cookies.set("google_oauth_state", state, {
