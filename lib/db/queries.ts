@@ -1,8 +1,8 @@
 "use server";
 
-import { desc, and, eq, isNull } from "drizzle-orm";
+import { desc, and, eq, isNull, count, sum } from "drizzle-orm";
 import { db } from "./drizzle";
-import { activityLogs, teamMembers, teams, users, game_locations } from "./schema";
+import { activityLogs, teamMembers, teams, users, game_locations, userPurchasesTable } from "./schema";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/session";
 
@@ -97,6 +97,61 @@ export async function setUserLocation(userId: number, newLocation: string) {
     .where(eq(users.id, userId));
 
   return result
+}
+
+export async function getUserPurchases(userIdToQuery: number) {
+
+  const purchases = await db.select()
+    .from(userPurchasesTable)
+    .where(eq(userPurchasesTable.userId, userIdToQuery));
+
+  // The result 'purchases' will be an array of matching purchase objects.
+  // If the user has no purchases, it will be an empty array [].
+  return purchases;
+}
+
+
+// Select the count, aliasing the result field to 'total'
+export async function getPurchasesCount() {
+  const purchasesCount = await db.select({
+    total: count() // count() corresponds to COUNT(*)
+  }).from(userPurchasesTable);
+
+  const totalCount = purchasesCount[0]?.total ?? 0;
+  return totalCount;
+}
+
+//
+export async function getPurchasesTotal() {
+  const result = await db.select({
+    // Pass the actual price column schema here!
+    totalPrice: sum(userPurchasesTable.price)
+  }).from(userPurchasesTable);
+
+  // The result is an array like [{ totalPrice: '1234.56' }] or [{ totalPrice: null }] if empty/all null
+  // Access the 'totalPrice' property from the first element
+  // Default to string '0' if the result is null or undefined
+  const totalPriceString = result[0]?.totalPrice ?? '0';
+  return totalPriceString;
+}
+
+export async function getUsersCount() {
+  const usersCount = await db.select({
+    total: count() // count() corresponds to COUNT(*)
+  }).from(users);
+
+  const totalUsersCount = usersCount[0]?.total ?? 0;
+  return totalUsersCount;
+}
+
+
+export async function getLocationsCount() {
+  const locationsCount = await db.select({
+    total: count() // count() corresponds to COUNT(*)
+  }).from(game_locations);
+
+  const totallocationssCount = locationsCount[0]?.total ?? 0;
+  return totallocationssCount;
 }
 
 export async function getActivityLogs() {

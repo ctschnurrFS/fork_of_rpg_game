@@ -52,7 +52,7 @@ export default function SecurityPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium bold text-gray-900 mb-6">
-        Security Settings
+        Change Password
       </h1>
       <Card className="mb-8">
         <CardHeader>
@@ -121,6 +121,10 @@ export default function SecurityPage() {
           </form>
         </CardContent>
       </Card>
+
+      <h1 className="text-lg lg:text-2xl font-medium bold text-gray-900 mb-6">
+        Delete Account
+      </h1>
 
       <Card>
         <CardHeader>

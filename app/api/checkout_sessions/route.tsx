@@ -15,7 +15,8 @@ export async function POST(req: Request) {
     if (!priceId) {
       // Construct the full URL for the redirect
       // Absolute URL to /dashboard with fallback
-      const redirectUrl = new URL('/dashboard/purchase?noselection=true', origin || 'http://localhost:3000');
+      //const redirectUrl = new URL('/dashboard/purchase?noselection=true', origin || 'http://localhost:3000');
+      const redirectUrl = new URL('/pricing?noselection=true', origin || 'http://localhost:3000');
 
       return NextResponse.redirect(redirectUrl.toString());
     }    
@@ -31,9 +32,11 @@ export async function POST(req: Request) {
         },
       ],
       mode: 'payment',  // one time payment as opposed to subscription/ future payments
-      success_url: `${origin}/dashboard/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
+      //success_url: `${origin}/dashboard/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
       //cancel_url: `${origin}/?canceled=true`,
-      cancel_url: `${origin}/dashboard/purchase?canceled=true`,
+      //cancel_url: `${origin}/dashboard/purchase?canceled=true`,
+      cancel_url: `${origin}/pricing?canceled=true`,
     });
     if (!session.url) {
       return NextResponse.json(

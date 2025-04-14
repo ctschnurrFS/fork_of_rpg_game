@@ -1,5 +1,5 @@
 "use client";
-import { useCallGemini } from "@/lib/useCallGemini";
+import { useCallGemini } from "@/lib/useGeminiImage";
 import { useState } from "react";
 
 export default function GeminiComponent() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallGemini } from "@/lib/useCallGemini";
+import { useCallGemini } from "@/lib/useGeminiImage";
 import { useEffect } from "react"; // Import useEffect
 
 // Define the props for the component

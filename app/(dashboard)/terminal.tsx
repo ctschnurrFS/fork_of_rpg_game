@@ -5,11 +5,13 @@ import { Copy, Check } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { setupActions, handleUserInput } from './actions';
 import { useGemini } from '../../lib/useGemini';
+import { useGeminiImage } from "@/lib/useGeminiImage";
 
 export function Terminal(props: { player: any; }) {
   const user = props.player
   const TERMINAL_MAX = 100000;
   const { queryGemini } = useGemini();
+  const { queryGeminiImage } = useGeminiImage();
 
   useEffect(() => {
     setupActions(user);
@@ -33,7 +35,7 @@ export function Terminal(props: { player: any; }) {
 
     try {
       // Wait for the result from handleUserInput
-      await handleUserInput(playerInput, queryGemini);
+      await handleUserInput(playerInput, queryGemini, queryGeminiImage);
 
       gameTerminal.scrollTop = gameTerminal.scrollHeight;
 
