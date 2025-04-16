@@ -17,8 +17,33 @@ import { ClassSelector } from "@/app/(dashboard)/dashboard/general/components/cl
 import { updateUserClass } from "@/app/(dashboard)/dashboard/general/components/class-management/userActions";
 import { ClassManagement } from "@/app/(dashboard)/dashboard/general/components/class-management/ClassManagement";
 
-type CharacterClass = "Fighter" | "Rogue" | "Barbarian" | "Warlock" | "Druid" | "Paladin" | "Sorcerer";
+// Define the ActionState type
 type ActionState = { error?: string; success?: string; };
+
+// Define a custom hook for managing actions
+function useActionState<ActionState, FormData>(
+  action: (formData: FormData) => Promise<ActionState>,
+  initialState: ActionState
+) {
+  const [state, setState] = useState<ActionState>(initialState);
+  const [isPending, setIsPending] = useState<boolean>(false);
+
+  const formAction = async (formData: FormData) => {
+    setIsPending(true);
+    try {
+      const result = await action(formData);
+      setState(result);
+    } catch (error) {
+      setState({ ...state, error: "An error occurred" } as ActionState);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return [state, formAction, isPending] as const;
+}
+
+type CharacterClass = "Fighter" | "Rogue" | "Barbarian" | "Warlock" | "Druid" | "Paladin" | "Sorcerer";
 
 export default function GeneralPage() {
   const { userPromise } = useUser();
@@ -110,7 +135,7 @@ export default function GeneralPage() {
               {passwordState.error && <p className="text-red-500 text-sm">{passwordState.error}</p>}
               {passwordState.success && <p className="text-green-500 text-sm">{passwordState.success}</p>}
               <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white" disabled={isPasswordPending}>
-                {isPasswordPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Updating...</> : <><Lock className="mr-2 h-4 w-4" />Update Password</>}
+                {isPasswordPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Updating...</> : <><Lock className="mr-2 h-4 w-4" />Update Password</> }
               </Button>
             </form>
           </CardContent>
