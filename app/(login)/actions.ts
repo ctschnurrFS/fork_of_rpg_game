@@ -130,7 +130,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     email,
     passwordHash,
     role: 'owner',
-    location_id: ''
+    location_id: 'castle_courtyard'
   };
 
   const [createdUser] = await db.insert(users).values(newUser).returning();
