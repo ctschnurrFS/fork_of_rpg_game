@@ -135,6 +135,28 @@ export async function getPurchasesTotal() {
   return totalPriceString;
 }
 
+
+export async function getLatestPurchase() {
+
+  const latestPurchaseResult = await db
+    .select() // Select all columns from the purchases table
+    .from(userPurchasesTable)
+    .orderBy(desc(userPurchasesTable.purchaseDate)) // Order by date DESCENDING (latest first)
+    .limit(1); // Take only the first record  
+
+  const latestPurchase = latestPurchaseResult.length > 0 ? latestPurchaseResult[0] : null;
+
+  return latestPurchaseResult[0];
+}
+
+
+
+
+
+
+
+
+
 export async function getUsersCount() {
   const usersCount = await db.select({
     total: count() // count() corresponds to COUNT(*)
@@ -152,6 +174,43 @@ export async function getLocationsCount() {
 
   const totallocationssCount = locationsCount[0]?.total ?? 0;
   return totallocationssCount;
+}
+
+export async function getLatestOverallSignIn() {
+  // noStore(); // Uncomment if you need fresh data on every request
+
+  const signInAction = 'SIGN_IN';
+
+  try {
+    // Drizzle returns an array even for limit(1)
+    const result = await db
+      .select({
+        userId: users.id,
+        userName: users.name,
+        userEmail: users.email,
+        signInTime: activityLogs.timestamp // The timestamp from the log entry
+      })
+      .from(users) // Start from users
+      .innerJoin(activityLogs, eq(users.id, activityLogs.userId)) // Join logs
+      // Filter for the specific action
+      .where(eq(activityLogs.action, signInAction))
+      // --- OR use ilike for case-insensitive matching: ---
+      // .where(ilike(activityLogs.action, signInAction))
+
+      // Order by timestamp DESCENDING to get the latest first
+      .orderBy(desc(activityLogs.timestamp))
+      // Limit to only the single most recent record
+      .limit(1);
+
+    // Extract the first element if the array is not empty
+    const latestSignIn = result.length > 0 ? result[0] : null;
+    
+    return latestSignIn;
+
+  } catch (error) {
+    console.error("Error fetching latest overall sign-in:", error);
+    return null; // Return null on error
+  }
 }
 
 export async function getActivityLogs() {

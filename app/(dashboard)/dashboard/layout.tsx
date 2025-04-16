@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, Shield, Activity, Menu, DollarSign, LayoutDashboard } from 'lucide-react';
+import { Users, Settings, Shield, Activity, Menu, DollarSign, LayoutDashboard, School, UserPlus } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -14,11 +14,12 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-
+  //https://lucide.dev/icons/
   const navItems = [
-    { href: '/dashboard/dashboardrpg', icon: LayoutDashboard, label: 'Game Dashboard' },
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Game Dashboard' },
     { href: '/dashboard/userslist', icon: Users, label: 'Site Users' },
-    { href: '/dashboard', icon: Users, label: 'Invite New User' },
+    { href: '/dashboard/settings', icon: UserPlus, label: 'Invite New User' },
+    { href: '/dashboard/gamelocations', icon: School, label: 'Game Locations' },
     { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'In Game Purchases' }, 
     { href: '/dashboard/general', icon: Settings, label: 'General' },    
     { href: '/dashboard/security', icon: Shield, label: 'Change Password' },
@@ -53,7 +54,7 @@ export default function DashboardLayout({
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <nav className="h-full overflow-y-auto p-4">
+          <nav className="h-full overflow-y-auto p-4 bg-gray-200">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} passHref>
                 <Button
