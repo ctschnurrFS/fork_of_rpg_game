@@ -24,11 +24,14 @@ export default function GeneralPage() {
   const { userPromise } = useUser();
   const [user, setUser] = useState<any>(null);
 
+  // Always fetch user data on initial render
   useEffect(() => {
-    userPromise.then((userData) => setUser(userData)); // Fetch user data only client-side
-  }, [userPromise]);
+    userPromise.then((userData) => {
+      setUser(userData);
+    });
+  }, []); // Empty dependency array means this runs only on mount
 
-  if (!user) return <div>Loading...</div>; // Display loading state until user data is available
+  if (!user) return <div>Loading...</div>; // Handle loading state
 
   const [selectedClass, setSelectedClass] = useState<CharacterClass | "">(
     user?.class || ""
