@@ -4,7 +4,7 @@ import { useUser } from "@/lib/auth";
 import { AccountInfoCard } from "@/app/(dashboard)/dashboard/general/components/AccountInfoCard";
 import { MyPurchasesListCard } from "./components/MyPurchases";
 import LocationDisplay from "./components/MyLocation";
-import { updateAccount } from "@/app/(login)/actions"; 
+import { updateAccount } from "@/app/(login)/actions";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,13 @@ import { updatePassword, deleteAccount } from '@/app/(login)/actions';
 import { ClassSelector } from "@/app/(dashboard)/dashboard/general/components/class-management/ClassSelector";
 import { updateUserClass } from "@/app/(dashboard)/dashboard/general/components/class-management/userActions";
 import { ClassManagement } from "@/app/(dashboard)/dashboard/general/components/class-management/ClassManagement";
+import dynamic from 'next/dynamic'; // Import dynamic for client-side rendering
 
 type CharacterClass = "Fighter" | "Rogue" | "Barbarian" | "Warlock" | "Druid" | "Paladin" | "Sorcerer";
 type ActionState = { error?: string; success?: string; };
+
+const DynamicAccountInfoCard = dynamic(() => import('@/app/(dashboard)/dashboard/general/components/AccountInfoCard'), { ssr: false });
+const DynamicClassSelector = dynamic(() => import('@/app/(dashboard)/dashboard/general/components/class-management/ClassSelector'), { ssr: false });
 
 export default function GeneralPage() {
   const { userPromise } = useUser();
@@ -36,17 +40,12 @@ export default function GeneralPage() {
   }, []); // Empty dependency array ensures this only runs once on mount
 
   const [accountState, accountFormAction, isAccountPending] = useActionState<ActionState, FormData>(updateAccount, { error: "", success: "" });
-
   const [passwordState, passwordAction, isPasswordPending] = useActionState<ActionState, FormData>(updatePassword, { error: '', success: '' });
-
   const [deleteState, deleteAction, isDeletePending] = useActionState<ActionState, FormData>(deleteAccount, { error: '', success: '' });
 
-  const [classState, classAction, isClassPending] = useActionState<ActionState, { userId: string; newClass: CharacterClass | "" }>(
-    async (_, formData) => {
-      return await updateUserClass(formData.userId, formData.newClass);
-    },
-    { error: "", success: "" }
-  );
+  const [classState, classAction, isClassPending] = useActionState<ActionState, { userId: string; newClass: CharacterClass | "" }>(async (_, formData) => {
+    return await updateUserClass(formData.userId, formData.newClass);
+  }, { error: "", success: "" });
 
   const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,7 +78,7 @@ export default function GeneralPage() {
         <LocationDisplay locationId={user?.location_id}></LocationDisplay>
         <MyPurchasesListCard userId={user.id}></MyPurchasesListCard>
         {user?.role === "regular" ? (
-          <ClassSelector
+          <DynamicClassSelector
             user={{ id: String(user.id), class: user.class as CharacterClass | undefined }}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
@@ -90,7 +89,7 @@ export default function GeneralPage() {
         ) : (
           <ClassManagement />
         )}
-        <AccountInfoCard user={{ name: user?.name ?? undefined, email: user?.email ?? undefined }} accountState={accountState} isAccountPending={isAccountPending} accountFormAction={accountFormAction} />
+        <DynamicAccountInfoCard user={{ name: user?.name ?? undefined, email: user?.email ?? undefined }} accountState={accountState} isAccountPending={isAccountPending} accountFormAction={accountFormAction} />
         <Card>
           <CardHeader><CardTitle>Change Password</CardTitle></CardHeader>
           <CardContent>
