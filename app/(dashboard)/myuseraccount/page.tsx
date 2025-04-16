@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { use, useState, startTransition, useActionState } from "react";
 import { useUser } from "@/lib/auth";
@@ -116,7 +117,7 @@ export default function GeneralPage() {
       {/* Wrap the three cards in a div with grid classes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-        <LocationDisplay locationId={user.location_id}></LocationDisplay>
+        <LocationDisplay locationId={user?.location_id}></LocationDisplay>
 
         <MyPurchasesListCard  userId={user.id}></MyPurchasesListCard>
 
