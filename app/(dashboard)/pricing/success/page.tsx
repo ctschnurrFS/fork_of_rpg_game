@@ -2,9 +2,12 @@ import { redirect } from 'next/navigation'
 import { stripe } from "@/lib/payments/stripe"
 import { db } from '@/lib/db/drizzle'
 import { userPurchasesTable } from '@/lib/db/schema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardFooter, CardTitle, CardDescription  } from '@/components/ui/card';
+// import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { getTeamForUser, getUser } from '@/lib/db/queries';
 import { NextResponse } from "next/server";
+import { CheckCircle, type LucideIcon, } from 'lucide-react';
 
 export default async function Success({ searchParams }: { searchParams: { session_id?: string } }) {
 
@@ -76,43 +79,80 @@ export default async function Success({ searchParams }: { searchParams: { sessio
     }).returning();
 
     //////////////////////////////////////////////////////////////
+  // Calculate total amount
+  //const totalAmount = line_items?.data?.reduce((sum, item) => sum + item.amount_total, 0) / 100 || 0;
+
+  // Determine the best display name/email
+  const displayName = user?.name || customerEmail?.split('@')[0] || 'Valued Customer'; // Fallback display name
+  const confirmationEmail = user?.email || customerEmail || 'your email address'; // Fallback email
 
     return (
-      <section id="success">
-
-<Card className="mb-8 border border-gray-200 shadow-lg">
-  <CardHeader className="p-6 text-center">
-    <div className="flex items-center justify-center text-green-500">
-      ✅ {/* Or use an icon library like Lucide */}
-    </div>
-    <CardTitle className="text-xl font-semibold mt-4">Payment Successful!</CardTitle>
-
-    <p className="text-gray-600 mt-2">Thank you for your purchase, <span className="font-semibold">{ user?.name } {customerEmail}</span>!</p>
-    <p className="text-gray-600 mt-2">User Name: { user?.name } </p>
-    <p className="text-gray-600 mt-2">User Email: { user?.email } </p>
-    <p className="text-gray-600 mt-2">User Role: {user?.role}</p>
-    
-    <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-      <h2 className="text-lg font-medium text-gray-800">Order Details</h2>
-      <ul className="mt-2 space-y-2">
-        {line_items?.data?.map((item) => (
-          <li key={item.id} className="flex justify-between p-2 bg-white rounded-md shadow">
-            <span>{item.quantity} x {item.description}</span>
-            <span className="font-medium">${(item.amount_total / 100).toFixed(2)}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <p className="mt-4 text-gray-700 font-medium">Status: <span className="text-green-600">{payment_status}</span></p>
-
-    <div className="mt-6">
-      <a href="/" className="text-blue-600 hover:underline">Return to the Game</a>
-    </div>
-  </CardHeader>
-</Card>
-
+      <section id="success" className="flex justify-center items-start min-h-screen bg-gray-50 px-4 py-12 md:py-16">
+        <Card className="w-full max-w-lg shadow-xl border border-gray-200">
+          <CardHeader className="text-center p-6 bg-gradient-to-br from-green-50 to-white">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" aria-hidden="true" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-gray-900">Payment Successful!</CardTitle>
+            <CardDescription className="mt-2 text-md text-gray-600">
+              Thank you for your purchase, <span className="font-semibold">{displayName}</span>!
+            </CardDescription>
+            <p className="text-sm text-gray-500 mt-1">
+              A confirmation receipt has been sent to <span className="font-medium">{confirmationEmail}</span>.
+            </p>
+          </CardHeader>
+  
+          <CardContent className="p-6 space-y-6">
+            {/* Order Summary */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <h2 className="text-lg font-semibold text-gray-800 bg-gray-100 px-4 py-3 border-b border-gray-200">
+                Order Summary
+              </h2>
+              <ul className="divide-y divide-gray-200">
+                {line_items?.data?.map((item) => (
+                  <li key={item.id} className="flex justify-between items-center px-4 py-3 text-sm">
+                    <span className="text-gray-700">
+                      {item.quantity} x {item.description}
+                    </span>
+                    <span className="font-medium text-gray-900">
+                      ${(item.amount_total / 100).toFixed(2)}
+                    </span>
+                  </li>
+                ))}
+                {/* Total Amount */}
+                <li className="flex justify-between items-center px-4 py-3 bg-gray-50 text-sm font-semibold">
+                  <span className="text-gray-800">Total Amount</span>
+                  <span className="text-gray-900">${price}</span>
+                </li>
+              </ul>
+            </div>
+  
+            {/* Payment Status */}
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Payment Status: <span className="font-medium text-green-700 capitalize bg-green-100 px-2 py-0.5 rounded-full">{payment_status?.replace('_', ' ')}</span>
+              </p>
+            </div>
+  
+            {/* Optional User Info - uncomment if needed, but often receipt email is enough */}
+            {/*
+            {user && (
+              <div className="text-center text-xs text-gray-500">
+                <p>Account: {user.name} ({user.email})</p>
+                <p>Role: {user.role}</p>
+              </div>
+            )}
+            */}
+  
+          </CardContent>
+  
+          <CardFooter className="p-6 border-t border-gray-200 bg-gray-50 flex justify-center">
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+              <a href="/">Return to the Game</a>
+            </Button>
+          </CardFooter>
+        </Card>
       </section>
-    )
+    );
   }
 }
