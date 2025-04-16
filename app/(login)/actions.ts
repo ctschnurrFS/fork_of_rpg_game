@@ -160,7 +160,11 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       .limit(1);
 
     if (!invitation) {
-      return { error: "Invalid or expired invitation.", email, password: "" };
+      return {
+        error: "Failed to create account. Please try again.",
+        email,
+        password: "",
+      };
     }
 
     teamId = invitation.teamId;
