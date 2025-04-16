@@ -1,7 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
-
-import { use, useState, startTransition, useActionState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/lib/auth";
 import { AccountInfoCard } from "@/app/(dashboard)/dashboard/general/components/AccountInfoCard";
 import { MyPurchasesListCard } from "./components/MyPurchases";
@@ -35,7 +33,19 @@ type ActionState = {
 
 export default function GeneralPage() {
   const { userPromise } = useUser();
-  const user = use(userPromise);
+  const [user, setUser] = useState<any>(null);
+
+  // On component mount, set the user data
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await userPromise;
+      setUser(userData);
+    };
+    
+    fetchUser();
+  }, [userPromise]);
+
+  if (!user) return <div>Loading...</div>;
 
   const [selectedClass, setSelectedClass] = useState<CharacterClass | "">(
     user?.class || ""
@@ -135,7 +145,7 @@ export default function GeneralPage() {
           />
         ) : (
           <ClassManagement />
-        )}
+        }
 
 
         <AccountInfoCard
