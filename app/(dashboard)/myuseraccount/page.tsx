@@ -17,33 +17,8 @@ import { ClassSelector } from "@/app/(dashboard)/dashboard/general/components/cl
 import { updateUserClass } from "@/app/(dashboard)/dashboard/general/components/class-management/userActions";
 import { ClassManagement } from "@/app/(dashboard)/dashboard/general/components/class-management/ClassManagement";
 
-// Define the ActionState type
-type ActionState = { error?: string; success?: string; };
-
-// Define a custom hook for managing actions
-function useActionState<ActionState, FormData>(
-  action: (formData: FormData) => Promise<ActionState>,
-  initialState: ActionState
-) {
-  const [state, setState] = useState<ActionState>(initialState);
-  const [isPending, setIsPending] = useState<boolean>(false);
-
-  const formAction = async (formData: FormData) => {
-    setIsPending(true);
-    try {
-      const result = await action(formData);
-      setState(result);
-    } catch (error) {
-      setState({ ...state, error: "An error occurred" } as ActionState);
-    } finally {
-      setIsPending(false);
-    }
-  };
-
-  return [state, formAction, isPending] as const;
-}
-
 type CharacterClass = "Fighter" | "Rogue" | "Barbarian" | "Warlock" | "Druid" | "Paladin" | "Sorcerer";
+type ActionState = { error?: string; success?: string; };
 
 export default function GeneralPage() {
   const { userPromise } = useUser();
@@ -59,8 +34,6 @@ export default function GeneralPage() {
       setSelectedClass(userData.class || ""); // Initialize class after user data is loaded
     });
   }, []); // Empty dependency array ensures this only runs once on mount
-
-  if (!user) return <div>Loading...</div>; // Prevent rendering issues during loading
 
   const [accountState, accountFormAction, isAccountPending] = useActionState<ActionState, FormData>(updateAccount, { error: "", success: "" });
 
@@ -96,6 +69,8 @@ export default function GeneralPage() {
       classAction({ userId: String(user.id), newClass: selectedClass });
     });
   };
+
+  if (!user) return <div>Loading...</div>; // This is safe as it returns early before rendering hooks
 
   return (
     <section className="flex-1 p-4 lg:p-8">
