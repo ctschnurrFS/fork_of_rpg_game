@@ -31,14 +31,14 @@ function Header() {
   return (
     <header className="border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-        <img
+        {/* <Link href="/" className="flex items-center">
+        {/* <img
               src="/images/Rogue_Terminal_Logo.svg"
               alt="My Company Logo"
               className="h-25 w-auto"
-            />
-          <span className="ml-2 text-xl font-semibold text-gray-900">RPG Game MVP</span>
-        </Link>
+            /> */}
+          <span className="ml-2 text-xl font-semibold text-gray-900"></span>
+        {/* </Link> */}
         <div className="flex items-center space-x-4">
           <Link
             href="/pricing"
@@ -53,7 +53,12 @@ function Header() {
                 <Menu className="mr-2 h-6 w-6 cursor-pointer p-0" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="flex flex-col gap-1">
-
+              <DropdownMenuItem className="cursor-pointer">
+                    <Link href="/" className="flex w-full items-center">
+                      <Home className="mr-2 h-4 w-4" />
+                      <span>Terminal</span>
+                    </Link>
+                  </DropdownMenuItem>
                 {/* Show if role is 'admin' OR 'owner' */}
                 {(user?.role === 'admin' || user?.role === 'owner') && (
                   <DropdownMenuItem className="cursor-pointer">

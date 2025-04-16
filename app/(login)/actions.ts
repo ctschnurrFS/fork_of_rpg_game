@@ -129,7 +129,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   const newUser: NewUser = {
     email,
     passwordHash,
-    role: 'owner',
+    role: 'regular',
     location_id: 'castle_courtyard'
   };
 

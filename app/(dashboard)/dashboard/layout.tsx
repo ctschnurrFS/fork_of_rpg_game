@@ -23,7 +23,6 @@ export default function DashboardLayout({
     { href: '/dashboard/purchase/purchaselist', icon: DollarSign, label: 'In Game Purchases' }, 
     { href: '/dashboard/general', icon: Settings, label: 'General' },    
     { href: '/dashboard/security', icon: Shield, label: 'Change Password' },
-    { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
   
     
   ];

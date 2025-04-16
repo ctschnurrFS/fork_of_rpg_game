@@ -5,8 +5,8 @@ import { UserProvider } from '@/lib/auth';
 import { getUser } from '@/lib/db/queries';
 
 export const metadata: Metadata = {
-  title: 'RPG Game MVP',
-  description: 'RPG Game MVP In Development',
+  title: 'ROGUE TERMINAL',
+  description: 'Rogue Terminal: Text Based RPG',
 };
 
 export const viewport: Viewport = {
