@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { z } from 'zod';
 
 export function useGeminiImage() {
 
@@ -7,18 +8,39 @@ export function useGeminiImage() {
     const [error, setError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+        // Schema for game input (e.g., "walk north", "ask how are you")
+        const gameInputSchema = z
+        .string()
+        .min(1, { message: 'Input cannot be empty' }) // Non-empty
+        .max(500, { message: 'Input is too long (max 500 characters)' }) // Max length
+        .trim() // Remove leading/trailing whitespace
+        .regex(/^[a-zA-Z0-9\s?!,.']*$/, { message: 'Input contains invalid characters' }) // Allowed characters
+        .transform((val) => val.toLowerCase()); // Normalize to lowercase
+
     const queryGeminiImage = async (message: string) => {
 
         setLoading(true);
         setError(null);
+        let sendPrompt;
+
+        const result = gameInputSchema.safeParse(message);
+
+        if (!result.success) {
+            console.log("validation error");            
+        }
+        else {
+            sendPrompt = result.data;
+        }
 
         try {        
+
+            console.log("asdfasdf    " + sendPrompt);
 
             // Call Gemini Image API
             const imageResponse = await fetch("/api/generate-image", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: message }),
+                body: JSON.stringify({ prompt: sendPrompt }),
             });
 
             let returnHtml = ""; // = "<div style = 'display: flex; align-items: center; gap: 20px;' ><div style='max-width: 900px; font-size: 14px;'>"

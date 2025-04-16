@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createSessionToken, verifyToken } from "@/lib/auth/session"; // Updated import
+//import { getUser } from "@/lib/db/queries";
+
 
 const protectedRoutes = "/dashboard";
 
@@ -9,7 +11,12 @@ export async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("session");
   const isProtectedRoute = pathname.startsWith(protectedRoutes);
 
+// const user = await getUser();
+  //console.log(`[Middleware] Running for path: ${request.nextUrl.pathname}`);
+
   // Redirect to sign-in if protected route and no session
+
+// console.log("CHECK MIDDLEWARE: " + user?.role);
   if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }

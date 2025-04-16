@@ -54,7 +54,7 @@ export default function DashboardLayout({
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <nav className="h-full overflow-y-auto p-4">
+          <nav className="h-full overflow-y-auto p-4 bg-gray-200">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} passHref>
                 <Button

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { z } from 'zod';
 
 export function useGemini() {
 
@@ -7,13 +8,32 @@ export function useGemini() {
     const [error, setError] = useState<string | null>(null);
     const [responseText, setResponseText] = useState<string | null>(null);
 
+    // Schema for game input (e.g., "walk north", "ask how are you")
+    const gameInputSchema = z
+        .string()
+        .min(1, { message: 'Input cannot be empty' }) // Non-empty
+        .max(500, { message: 'Input is too long (max 500 characters)' }) // Max length
+        .trim() // Remove leading/trailing whitespace
+        .regex(/^[a-zA-Z0-9\s?!,.']*$/, { message: 'Input contains invalid characters' }) // Allowed characters
+        .transform((val) => val.toLowerCase()); // Normalize to lowercase
+
     const queryGemini = async (message: string, npc: string): Promise<string> => {
 
         setLoading(true);
         setError(null);
         setResponseText(null);
+        let sendPrompt;
 
-        message = "Please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. And please limit your answer to 150 words or less. Here are the npc character details: " + npc + " and here is the question for them to answer: " +  message;
+        const result = gameInputSchema.safeParse(message);
+
+        if (!result.success) {
+            console.log("validation error");            
+        }
+        else {
+            sendPrompt = result.data;
+        }
+
+        sendPrompt = "Please give a response to this prompt knowing that it is part of an rpg game set in a fantasy world with characters and landscapes like in lord of the rings. And please limit your answer to 150 words or less. Here are the npc character details: " + npc + " and here is the question for them to answer: " +  sendPrompt;
         
         try {
 
@@ -21,7 +41,7 @@ export function useGemini() {
             const response = await fetch("/api/gemini", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: message }),
+                body: JSON.stringify({ message: sendPrompt }),
             });
 
             if (!response.ok) {
