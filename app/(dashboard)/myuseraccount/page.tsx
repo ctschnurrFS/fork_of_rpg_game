@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useUser } from "@/lib/auth";
 import { AccountInfoCard } from "@/app/(dashboard)/dashboard/general/components/AccountInfoCard";
 import { MyPurchasesListCard } from "./components/MyPurchases";
@@ -23,25 +23,32 @@ type ActionState = { error?: string; success?: string; };
 export default function GeneralPage() {
   const { userPromise } = useUser();
   const [user, setUser] = useState<any>(null);
+  const [selectedClass, setSelectedClass] = useState<CharacterClass | "">("");
+  
+  const [isPending, startTransition] = useTransition();
 
-  // Always fetch user data on initial render
+  // Fetch user on mount
   useEffect(() => {
     userPromise.then((userData) => {
       setUser(userData);
+      setSelectedClass(userData.class || ""); // Initialize class after user data is loaded
     });
-  }, []); // Empty dependency array means this runs only on mount
+  }, []); // Empty dependency array ensures this only runs once on mount
 
-  if (!user) return <div>Loading...</div>; // Handle loading state
-
-  const [selectedClass, setSelectedClass] = useState<CharacterClass | "">(
-    user?.class || ""
-  );
+  if (!user) return <div>Loading...</div>; // Prevent rendering issues during loading
 
   const [accountState, accountFormAction, isAccountPending] = useActionState<ActionState, FormData>(updateAccount, { error: "", success: "" });
 
   const [passwordState, passwordAction, isPasswordPending] = useActionState<ActionState, FormData>(updatePassword, { error: '', success: '' });
 
   const [deleteState, deleteAction, isDeletePending] = useActionState<ActionState, FormData>(deleteAccount, { error: '', success: '' });
+
+  const [classState, classAction, isClassPending] = useActionState<ActionState, { userId: string; newClass: CharacterClass | "" }>(
+    async (_, formData) => {
+      return await updateUserClass(formData.userId, formData.newClass);
+    },
+    { error: "", success: "" }
+  );
 
   const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,21 +64,11 @@ export default function GeneralPage() {
     });
   };
 
-  const [classState, classAction, isClassPending] = useActionState<ActionState, { userId: string; newClass: CharacterClass | "" }>(
-    async (_, formData) => {
-      return await updateUserClass(formData.userId, formData.newClass);
-    },
-    { error: "", success: "" }
-  );
-
   const handleClassSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user?.id) return;
-    await new Promise<void>((resolve) => {
-      startTransition(() => {
-        classAction({ userId: String(user.id), newClass: selectedClass });
-        resolve();
-      });
+    startTransition(() => {
+      classAction({ userId: String(user.id), newClass: selectedClass });
     });
   };
 
